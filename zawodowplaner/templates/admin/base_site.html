@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel</title>
+</head>
+<body>
+{% extends "admin/base.html" %}
+
+{% block title %}{{ title }} | Panel Administracyjny{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">Panel Administracyjny</a></h1>
+{% endblock %}
+
+</body>
+</html>

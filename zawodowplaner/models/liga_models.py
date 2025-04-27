@@ -1,6 +1,9 @@
 from django.db import models
 from django.core.validators import RegexValidator
 
+from zawodowplaner.models import organizator
+
+
 class liga(models.Model):
     id_ligi = models.AutoField(primary_key=True)
     nazwa = models.CharField(max_length=50)

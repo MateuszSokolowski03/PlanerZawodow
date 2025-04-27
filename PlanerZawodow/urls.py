@@ -16,7 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from jupyter_core.version import pattern
 
-urlpatterns = [
+urlpatterns = pattern[
     path('admin/', admin.site.urls),
 ]
