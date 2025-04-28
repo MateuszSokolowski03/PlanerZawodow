@@ -27,6 +27,10 @@ class mecz(models.Model):
     def __str__(self):
         return f"{self.druzyna_gospodarz} vs {self.druzyna_gosc} (Kolejka {self.id_kolejki.numer})"
 
+    class Meta:
+        verbose_name = "Mecz"  
+        verbose_name_plural = "Mecze"
+
 class wydarzenie(models.Model):
     TYP_ZDARZENIA_WYBOR = [
         ('bramka','Bramka'),
@@ -48,3 +52,7 @@ class wydarzenie(models.Model):
 
     def __str__(self):
         return f"{self.typ} ({self.minuta} min) - {self.id_zawodnika} ({self.id_druzyny})"
+    
+    class Meta:
+        verbose_name = "Wydarzenie"  
+        verbose_name_plural = "Wydarzenia"

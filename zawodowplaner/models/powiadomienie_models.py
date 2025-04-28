@@ -19,3 +19,6 @@ class powiadomienie(models.Model):
 
     def __str__(self):
         return f"{self.tresc} ({self.data_wyslania})"
+    class Meta:
+        verbose_name = "Powiadomienie"  
+        verbose_name_plural = "Powiadomienia"
