@@ -2,6 +2,9 @@ from django.db import models
 from django.core.validators import MinValueValidator
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from zawodowplaner.models.liga_models import kolejka
 
 class mecz(models.Model):
     TYP_STATUS_WYBOR = [
@@ -64,7 +67,21 @@ class mecz(models.Model):
     def __str__(self):
         return f"{self.druzyna_gospodarz} vs {self.druzyna_gosc} (Kolejka {self.id_kolejki.numer})"
 
+@receiver(post_save, sender=mecz)
+def zakonczenie_kolejki_po_meczu(sender, instance, **kwargs):
+    """
+    Automatycznie kończy kolejkę, jeśli wszystkie mecze w niej są zakończone.
+    """
+    kolejka_instance = instance.id_kolejki  # Pobierz kolejkę powiązaną z meczem
+    if not kolejka_instance:
+        return
 
+    # Sprawdź, czy wszystkie mecze w kolejce mają status 'zakonczony'
+    wszystkie_mecze_zakonczone = not kolejka_instance.mecz_set.filter(status__in=['planowany', 'rozpoczety']).exists()
+
+    if wszystkie_mecze_zakonczone:
+        kolejka_instance.czy_zakonczona = True
+        kolejka_instance.save()
 
 
 
