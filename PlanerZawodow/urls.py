@@ -27,6 +27,7 @@ urlpatterns = [
     path('zawody/', views.ZawodyListView.as_view(), name='zawody-list'),
     path('zawody/<int:pk>/', views.ZawodyDetailView.as_view(), name='zawody-detail'),
     path('zawody/dodaj/', views.ZawodyCreateView.as_view(), name='zawody-create'),
+    path('zawody/update/', views.ZawodyUpdateView.as_view(), name='zawody-update'),
 
     path('kolejka/dodaj/', views.KolejkaCreateView.as_view(), name='kolejka-create'),
 
