@@ -12,8 +12,8 @@ class mecz(models.Model):
     id_kolejki = models.ForeignKey('kolejka', on_delete=models.CASCADE)
     id_zawodu = models.ForeignKey('zawody', on_delete=models.CASCADE)
     data_meczu = models.DateTimeField()
-    druzyna_gospodarz = models.ForeignKey('druzyna', related_name='druzyna_gospodarz', on_delete=models.CASCADE)
-    druzyna_gosc = models.ForeignKey('druzyna', related_name='druzyna_gosc', on_delete=models.CASCADE)
+    druzyna_gospodarz = models.ForeignKey('Zgloszenie', related_name='gospodarze', on_delete=models.CASCADE)
+    druzyna_gosc = models.ForeignKey('Zgloszenie', related_name='goscie', on_delete=models.CASCADE)
     wynik_gospodarz = models.IntegerField(default=0)
     wynik_gosc = models.IntegerField(default=0)
     status = models.CharField(

@@ -4,17 +4,6 @@ from django.core.validators import RegexValidator
 from zawodowplaner.models import organizator
 
 
-class liga(models.Model):
-    id_ligi = models.AutoField(primary_key=True)
-    nazwa = models.CharField(max_length=50)
-    poziom_rozgrywkowy = models.CharField(max_length=50)
-    region = models.CharField(max_length=50)
-    liczba_zespolow = models.IntegerField(default=0)
-
-    def __str__(self):
-        return f"{self.nazwa} ({self.poziom_rozgrywkowy})"
-    
-
     
 class zawody(models.Model):
     TYP_STATUS_WYBOR = [
@@ -26,7 +15,6 @@ class zawody(models.Model):
 
     id_zawodu = models.AutoField(primary_key=True)
     nazwa = models.CharField(max_length=50)
-    id_ligi = models.ForeignKey(liga,on_delete=models.CASCADE)
     id_organizatora = models.ForeignKey(organizator, on_delete=models.CASCADE)
     data_rozpoczecia = models.DateTimeField()
     data_zakonczenia = models.DateTimeField()
