@@ -1,5 +1,7 @@
 from django.db import models
 from django.core.validators import RegexValidator
+from django.core.exceptions import ValidationError
+
 
 class uzytkownik(models.Model):
     TYP_UZYTKOWNIKA_WYBOR = [
@@ -36,7 +38,10 @@ class organizator(models.Model):
         validators=[RegexValidator(regex=r'^\d{11}$', message="PESEL musi mieć 11 cyfr.")],
     )
     data_dolaczenia = models.DateTimeField(auto_now_add=True)
-
+    def clean(self):
+        # Sprawdź, czy powiązany użytkownik ma typ "organizator"
+        if self.id_uzytkownika.typ_uzytkownika != 'organizator':
+            raise ValidationError("Tylko użytkownik o typie 'organizator' może być przypisany jako organizator.")
     def __str__(self):
         return f"{self.imie} {self.nazwisko} ({self.telefon})"
     
@@ -52,5 +57,13 @@ class kapitan(models.Model):
     )
     potwierdzony = models.BooleanField(default=False)
 
+
+    def clean(self):
+        # Sprawdź, czy powiązany użytkownik ma typ "kapitan"
+        if self.id_uzytkownika.typ_uzytkownika != 'kapitan':
+            raise ValidationError("Tylko użytkownik o typie 'kapitan' może być przypisany jako kapitan.")
+    def __str__(self):
+        return f"{self.imie} {self.nazwisko} ({self.telefon})"
+    
     def __str__(self):
         return f"{self.imie} {self.nazwisko} ({self.telefon})"
