@@ -6,13 +6,51 @@ from django.views.generic import (
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import (
     zawody, kolejka, druzyna, zgloszenie,
-    zawodnik, mecz, wydarzenie, powiadomienie
+    zawodnik, mecz, wydarzenie, powiadomienie,
+    organizator, kapitan, uzytkownik
 )
 
 
 # Widok dla strony poczatkowej
 class HomePageView(TemplateView):
     template_name = 'home.html'
+
+# Widoki dla Organizatorów
+class OrganizatorListView(ListView):
+    model = organizator
+    template_name = 'organizator/list.html'
+    context_object_name = 'organizatorzy'
+
+class OrganizatorCreateView(CreateView):
+    model = organizator
+    template_name = 'organizator/form.html'
+    fields = ['id_uzytkownika', 'imie', 'nazwisko', 'telefon', 'PESEL']
+    success_url = reverse_lazy('organizator-list')
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields['id_uzytkownika'].queryset = uzytkownik.objects.filter(typ_uzytkownika='organizator')
+        return form
+
+# Widoki dla Kapitanów
+class KapitanListView(ListView):
+    model = kapitan
+    template_name = 'kapitan/list.html'
+    context_object_name = 'kapitanowie'
+
+class KapitanUpdateView(UpdateView):
+    model = kapitan
+    template_name = 'kapitan/form.html'
+    fields = ['potwierdzony']
+    success_url = reverse_lazy('kapitan-list')
+
+# Widoki dla Użytkowników
+class UzytkownikListView(ListView):
+    model = uzytkownik
+    template_name = 'uzytkownik/list.html'
+    context_object_name = 'uzytkownicy'
+    ordering = ['-data_rejestracji']
+
 
 # Widoki dla Zawodów
 class ZawodyListView(ListView):
@@ -113,6 +151,21 @@ class MeczCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('mecz-list')
 
 
+class MeczListView(ListView):
+    model = mecz
+    template_name = 'mecz/list.html'
+
+    def get_queryset(self):
+        return mecz.objects.select_related('id_zawodu', 'id_kolejki')
+
+
+class MeczUpdateView(UpdateView):
+    model = mecz
+    template_name = 'mecz/form.html'
+    fields = ['wynik_gospodarz', 'wynik_gosc', 'status', 'sedzia_glowny']
+    success_url = reverse_lazy('mecz-list')
+
+
 # Widoki dla Powiadomień
 class PowiadomienieListView(LoginRequiredMixin, ListView):
     model = powiadomienie
@@ -127,3 +180,17 @@ class PowiadomienieUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'powiadomienie/form.html'
     fields = ['przeczytane']
     success_url = reverse_lazy('powiadomienie-list')
+
+# Widoki dla Wydarzeń
+class WydarzenieCreateView(CreateView):
+    model = wydarzenie
+    template_name = 'wydarzenie/form.html'
+    fields = ['id_meczu', 'minuta', 'typ', 'id_zawodnika', 'id_druzyny', 'komentarz']
+    success_url = reverse_lazy('mecz-list')
+
+# Widoki dla Zawodników
+class ZawodnikUpdateView(UpdateView):
+    model = zawodnik
+    template_name = 'zawodnik/form.html'
+    fields = ['pozycja', 'numer_koszulki', 'zdjecie_url']
+    success_url = reverse_lazy('druzyna-list')

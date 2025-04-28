@@ -24,14 +24,39 @@ urlpatterns = [
 
     path('', HomePageView.as_view(), name='home'),
 
+    # Organizatorzy
+    path('organizatorzy/', views.OrganizatorListView.as_view(), name='organizator-list'),
+    path('organizator/dodaj/', views.OrganizatorCreateView.as_view(), name='organizator-create'),
+
+    # Kapitanowie
+    path('kapitanowie/', views.KapitanListView.as_view(), name='kapitan-list'),
+    path('kapitan/<int:pk>/', views.KapitanUpdateView.as_view(), name='kapitan-update'),
+
+    # Użytkownicy
+    path('uzytkownicy/', views.UzytkownikListView.as_view(), name='uzytkownik-list'),
+
+    # Mecze
+    path('mecze/', views.MeczListView.as_view(), name='mecz-list'),
+    path('mecz/<int:pk>/', views.MeczUpdateView.as_view(), name='mecz-update'),
+
+    # Wydarzenia
+    path('wydarzenie/dodaj/', views.WydarzenieCreateView.as_view(), name='wydarzenie-create'),
+
+    # Zawodnicy
+    path('zawodnik/<int:pk>/', views.ZawodnikUpdateView.as_view(), name='zawodnik-update'),
+
+    # Zawody
     path('zawody/', views.ZawodyListView.as_view(), name='zawody-list'),
     path('zawody/<int:pk>/', views.ZawodyDetailView.as_view(), name='zawody-detail'),
     path('zawody/dodaj/', views.ZawodyCreateView.as_view(), name='zawody-create'),
     path('zawody/update/', views.ZawodyUpdateView.as_view(), name='zawody-update'),
 
+    # Kolejka
     path('kolejka/dodaj/', views.KolejkaCreateView.as_view(), name='kolejka-create'),
 
+    # Drużyny
     path('druzyny/', views.DruzynaListView.as_view(), name='druzyna-list'),
 
+    #Powiadomienia
     path('powiadomienia/', views.PowiadomienieListView.as_view(), name='powiadomienie-list'),
 ]
