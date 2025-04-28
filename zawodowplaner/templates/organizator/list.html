@@ -1,0 +1,26 @@
+<!-- templates/organizator/list.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Organizatorzy</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Użytkownik</th>
+            <th>Imię i nazwisko</th>
+            <th>Telefon</th>
+            <th>Data dołączenia</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for o in organizatorzy %}
+        <tr>
+            <td>{{ o.id_uzytkownika.email }}</td>
+            <td>{{ o.imie }} {{ o.nazwisko }}</td>
+            <td>{{ o.telefon }}</td>
+            <td>{{ o.data_dolaczenia|date:"d.m.Y" }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
