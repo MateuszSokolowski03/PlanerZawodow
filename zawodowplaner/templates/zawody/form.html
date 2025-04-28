@@ -1,0 +1,14 @@
+<!-- templates/zawody/form.html -->
+{% extends "base.html" %}
+
+{% block title %}{% if object %}Edytuj Zawody{% else %}Dodaj Zawody{% endif %}{% endblock %}
+
+{% block content %}
+<h2>{% if object %}Edytuj Zawody{% else %}Nowe Zawody{% endif %}</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Zapisz</button>
+    <a href="{% url 'zawody-list' %}" class="btn btn-secondary">Anuluj</a>
+</form>
+{% endblock %}

@@ -1,0 +1,24 @@
+<!-- templates/zawody/detail.html -->
+{% extends "base.html" %}
+
+{% block title %}Szczegóły Zawodów{% endblock %}
+
+{% block content %}
+<h1>{{ object.nazwa }}</h1>
+<div class="card">
+    <div class="card-body">
+        <p class="card-text">
+            <strong>Organizator:</strong> {{ object.id_organizatora }}<br>
+            <strong>Termin:</strong> {{ object.data_rozpoczecia|date:"d.m.Y H:i" }} - {{ object.data_zakonczenia|date:"d.m.Y H:i" }}<br>
+            <strong>Status:</strong> {{ object.get_status_display }}<br>
+            <strong>Maks zespołów:</strong> {{ object.maks_zespolow }}
+        </p>
+
+        <h4>Regulamin</h4>
+        <pre>{{ object.regulaminy }}</pre>
+
+        <a href="{% url 'kolejka-create' %}" class="btn btn-success">Dodaj kolejkę</a>
+        <a href="{% url 'zawody-update' object.pk %}" class="btn btn-warning">Edytuj</a>
+    </div>
+</div>
+{% endblock %}

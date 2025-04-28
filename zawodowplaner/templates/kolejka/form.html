@@ -1,0 +1,20 @@
+<!-- templates/kolejka/form.html -->
+{% extends "base.html" %}
+
+{% block title %}Dodaj Kolejkę{% endblock %}
+
+{% block content %}
+<h2>Nowa Kolejka</h2>
+<form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+        {{ form.id_zawodu.label_tag }}
+        {{ form.id_zawodu }}
+    </div>
+    <div class="row">
+        <div class="col-md-6">{{ form.numer.label_tag }} {{ form.numer }}</div>
+        <div class="col-md-6">{{ form.nazwa.label_tag }} {{ form.nazwa }}</div>
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">Dodaj kolejkę</button>
+</form>
+{% endblock %}

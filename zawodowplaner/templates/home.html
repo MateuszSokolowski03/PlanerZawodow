@@ -1,0 +1,64 @@
+<!-- templates/home.html -->
+{% extends "base.html" %}
+
+{% block title %}Strona Główna{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-5">Witaj w systemie zarządzania zawodami</h1>
+
+    <div class="row">
+        <!-- Karta Zawodów -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">🏆 Zawody</h5>
+                    <p class="card-text">Zarządzaj zawodami sportowymi i turniejami.</p>
+                    <a href="{% url 'zawody-list' %}" class="btn btn-primary">Przejdź</a>
+                    <a href="{% url 'zawody-create' %}" class="btn btn-success">Dodaj nowe</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Karta Drużyn -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">👥 Drużyny</h5>
+                    <p class="card-text">Zarządzaj drużynami i zawodnikami.</p>
+                    <a href="{% url 'druzyna-list' %}" class="btn btn-primary">Przejdź</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Karta Powiadomień -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">🔔 Powiadomienia</h5>
+                    <p class="card-text">Sprawdź swoje powiadomienia.</p>
+                    <a href="{% url 'powiadomienie-list' %}" class="btn btn-primary">Przejdź</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">⚙️ Inne funkcje</h5>
+                    <div class="d-grid gap-2 d-md-block">
+                        <a href="{% url 'kolejka-create' %}" class="btn btn-outline-secondary">
+                            Dodaj kolejkę
+                        </a>
+                        <a href="/admin" class="btn btn-outline-dark" target="_blank">
+                            Panel administracyjny
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

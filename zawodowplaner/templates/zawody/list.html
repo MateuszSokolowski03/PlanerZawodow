@@ -1,0 +1,37 @@
+<!-- templates/zawody/list.html -->
+{% extends "base.html" %}
+
+{% block title %}Lista Zawodów{% endblock %}
+
+{% block content %}
+<h1>Zawody</h1>
+<a href="{% url 'zawody-create' %}" class="btn btn-primary mb-3">Dodaj nowe zawody</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nazwa</th>
+            <th>Organizator</th>
+            <th>Data rozpoczęcia</th>
+            <th>Status</th>
+            <th>Akcje</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for zawod in zawody %}
+        <tr>
+            <td>{{ zawod.nazwa }}</td>
+            <td>{{ zawod.id_organizatora }}</td>
+            <td>{{ zawod.data_rozpoczecia|date:"d.m.Y H:i" }}</td>
+            <td><span class="badge bg-{% if zawod.status == 'zatwierdzona' %}success{% else %}warning{% endif %}">{{ zawod.status }}</span></td>
+            <td>
+                <a href="{% url 'zawody-detail' zawod.pk %}" class="btn btn-sm btn-info">Szczegóły</a>
+                <a href="{% url 'zawody-update' zawod.pk %}" class="btn btn-sm btn-warning">Edytuj</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% include "pagination.html" with page=page_obj %}
+{% endblock %}
