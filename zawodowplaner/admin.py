@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from django.contrib import messages
 from .models import (
     uzytkownik, organizator, kapitan,
     zawody, kolejka,
@@ -225,6 +226,19 @@ class MeczAdmin(admin.ModelAdmin):
         }),
     )
     actions = ['rozpocznij_mecze', 'zakoncz_mecze']
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+
+        # Oblicz całkowitą liczbę bramek
+        total_goals = obj.wynik_gospodarz + obj.wynik_gosc
+
+        # Wyświetl komunikat w panelu administracyjnym
+        if total_goals > 0:
+            messages.info(
+                request,
+                f"Mecz został zapisany. Dodaj {total_goals} wydarzeń typu 'bramka' dla tego meczu."
+            )
     
     def get_mecz_info(self, obj):
         return f"{obj.druzyna_gospodarz.id_druzyny} vs {obj.druzyna_gosc.id_druzyny}"
