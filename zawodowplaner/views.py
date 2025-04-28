@@ -1,4 +1,3 @@
-# views.py
 from django.urls import reverse_lazy
 from django.views.generic import (
     ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView,
@@ -6,13 +5,14 @@ from django.views.generic import (
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import (
     zawody, kolejka, druzyna, zgloszenie,
-    zawodnik, mecz, wydarzenie, powiadomienie
+    zawodnik, mecz, wydarzenie, powiadomienie, uzytkownik  # Dodaj uzytkownik
 )
 
 
-# Widok dla strony poczatkowej
+# Widok dla strony początkowej
 class HomePageView(TemplateView):
     template_name = 'home.html'
+
 
 # Widoki dla Zawodów
 class ZawodyListView(ListView):
@@ -119,7 +119,14 @@ class PowiadomienieListView(LoginRequiredMixin, ListView):
     template_name = 'powiadomienie/list.html'
 
     def get_queryset(self):
-        return self.model.objects.filter(id_uzytkownika=self.request.user)
+        # Pobierz instancję modelu `uzytkownik` powiązaną z aktualnym użytkownikiem
+        try:
+            uzytkownik_instance = uzytkownik.objects.get(email=self.request.user.email)
+        except uzytkownik.DoesNotExist:
+            return self.model.objects.none()
+
+        # Filtruj powiadomienia dla tego użytkownika
+        return self.model.objects.filter(id_uzytkownika=uzytkownik_instance)
 
 
 class PowiadomienieUpdateView(LoginRequiredMixin, UpdateView):
