@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import RegexValidator
+from django.core.exceptions import ValidationError
 
 class druzyna(models.Model):
     id_druzyny = models.AutoField(primary_key=True)
@@ -39,6 +40,16 @@ class zgloszenie(models.Model):
         unique_together = ('id_zawodu', 'id_druzyny')
         verbose_name = "Zgłoszenie"  
         verbose_name_plural = "Zgłoszenia" 
+
+    def clean(self):
+        # Sprawdź, czy istnieje już zgłoszenie z tym samym kapitanem w tych samych zawodach
+        if zgloszenie.objects.filter(
+            id_zawodu=self.id_zawodu,
+            id_druzyny__id_kapitana=self.id_druzyny.id_kapitana
+        ).exclude(pk=self.pk).exists():
+            raise ValidationError("Kapitan tej drużyny jest już zgłoszony w tych zawodach.")
+
+
 
     def __str__(self):
         return f"{self.id_druzyny.nazwa} - {self.id_zawodu.nazwa} ({self.status})"
