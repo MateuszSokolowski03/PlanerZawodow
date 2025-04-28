@@ -49,7 +49,7 @@ urlpatterns = [
     path('zawody/', views.ZawodyListView.as_view(), name='zawody-list'),
     path('zawody/<int:pk>/', views.ZawodyDetailView.as_view(), name='zawody-detail'),
     path('zawody/dodaj/', views.ZawodyCreateView.as_view(), name='zawody-create'),
-    path('zawody/update/', views.ZawodyUpdateView.as_view(), name='zawody-update'),
+    path('zawody/<int:pk>/update/', views.ZawodyUpdateView.as_view(), name='zawody-update'),
 
     # Kolejka
     path('kolejka/dodaj/', views.KolejkaCreateView.as_view(), name='kolejka-create'),
@@ -57,6 +57,6 @@ urlpatterns = [
     # Drużyny
     path('druzyny/', views.DruzynaListView.as_view(), name='druzyna-list'),
 
-    #Powiadomienia
+    # Powiadomienia
     path('powiadomienia/', views.PowiadomienieListView.as_view(), name='powiadomienie-list'),
 ]
