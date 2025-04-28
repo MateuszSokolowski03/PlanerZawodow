@@ -21,6 +21,9 @@ class uzytkownik(models.Model):
 
     def __str__(self):
         return f"{self.email} ({self.typ_uzytkownika})"
+    class Meta:
+        verbose_name = "Użytkownik"  
+        verbose_name_plural = "Użytkownicy"
     
 
 class organizator(models.Model):
@@ -44,6 +47,9 @@ class organizator(models.Model):
             raise ValidationError("Tylko użytkownik o typie 'organizator' może być przypisany jako organizator.")
     def __str__(self):
         return f"{self.imie} {self.nazwisko} ({self.telefon})"
+    class Meta:
+        verbose_name = "Organizator"  
+        verbose_name_plural = "Organizatorzy"
     
 
 class kapitan(models.Model):
@@ -67,3 +73,6 @@ class kapitan(models.Model):
     
     def __str__(self):
         return f"{self.imie} {self.nazwisko} ({self.telefon})"
+    class Meta:
+        verbose_name = "Kapitan"  
+        verbose_name_plural = "Kapitanowie"

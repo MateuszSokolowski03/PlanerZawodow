@@ -30,7 +30,9 @@ class zawody(models.Model):
 
     def __str__(self):
         return f"{self.nazwa} ({self.data_rozpoczecia} - {self.data_zakonczenia})"
-    
+    class Meta:
+        verbose_name = "Zawody"  
+        verbose_name_plural = "Zawody"
 
 class kolejka(models.Model):
     id_kolejki = models.AutoField(primary_key=True)
@@ -44,6 +46,8 @@ class kolejka(models.Model):
     class Meta:
         unique_together = ('id_zawodu', 'numer')
         ordering = ['numer']
+        verbose_name = "Kolejka"  
+        verbose_name_plural = "Kolejki"
 
     def __str__(self):
         return f"Kolejka {self.numer} - {self.id_zawodu.nazwa}"

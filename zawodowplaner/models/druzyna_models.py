@@ -7,6 +7,10 @@ class druzyna(models.Model):
     nazwa = models.CharField(max_length=50)
     herb_url = models.URLField(max_length=200, blank=True)
     data_utworzenia = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Drużyna"  
+        verbose_name_plural = "Drużyny"  
     
     def __str__(self):
         return self.nazwa
@@ -33,6 +37,8 @@ class zgloszenie(models.Model):
 
     class Meta:
         unique_together = ('id_zawodu', 'id_druzyny')
+        verbose_name = "Zgłoszenie"  
+        verbose_name_plural = "Zgłoszenia" 
 
     def __str__(self):
         return f"{self.id_druzyny.nazwa} - {self.id_zawodu.nazwa} ({self.status})"
@@ -44,6 +50,11 @@ class zawodnik(models.Model):
         ('pomocnik','Pomocnik'),
         ('napastnik','Napastnik'),
     ]
+
+    class Meta:
+        verbose_name = "Zawodnik"  
+        verbose_name_plural = "Zawodnicy"
+
     id_zawodnika = models.AutoField(primary_key=True)
     id_druzyny = models.ForeignKey('druzyna', on_delete=models.CASCADE)
     imie = models.CharField(max_length=50)
@@ -58,3 +69,4 @@ class zawodnik(models.Model):
 
     def __str__(self):
         return f"{self.imie} {self.nazwisko} ({self.pozycja})"
+    
