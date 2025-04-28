@@ -5,6 +5,8 @@ from django.utils import timezone
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from zawodowplaner.models.liga_models import kolejka
+from django.core.validators import MinValueValidator, MaxValueValidator
+
 
 class mecz(models.Model):
     TYP_STATUS_WYBOR = [
@@ -95,7 +97,12 @@ class wydarzenie(models.Model):
     ]
     id_wydarzenia = models.AutoField(primary_key=True)
     id_meczu = models.ForeignKey(mecz, on_delete=models.CASCADE)
-    minuta = models.IntegerField(validators=[MinValueValidator(0)])
+    minuta = models.IntegerField(
+        validators=[
+            MinValueValidator(0, message="Minuta nie może być mniejsza niż 0."),
+            MaxValueValidator(120, message="Minuta nie może być większa niż 120.")
+        ]
+    )
     typ = models.CharField(
         max_length=20,
         choices=TYP_ZDARZENIA_WYBOR,
