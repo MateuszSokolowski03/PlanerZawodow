@@ -28,7 +28,10 @@ class uzytkownik(models.Model):
 
 class organizator(models.Model):
     id_organizatora = models.AutoField(primary_key=True)
-    id_uzytkownika = models.ForeignKey(uzytkownik, on_delete=models.CASCADE,unique=True)
+    id_uzytkownika = models.OneToOneField(
+        uzytkownik, 
+        on_delete=models.CASCADE
+    )    
     imie = models.CharField(
         max_length=50,
         validators=[RegexValidator(regex=r'^[^\d]*$', message="Imię nie może zawierać cyfr.")],
@@ -48,6 +51,9 @@ class organizator(models.Model):
     )
     data_dolaczenia = models.DateTimeField(auto_now_add=True)
     def clean(self):
+        # Sprawdź, czy istnieje już organizator z tym samym adresem e-mail
+        if organizator.objects.filter(id_uzytkownika__email=self.id_uzytkownika.email).exclude(pk=self.pk).exists():
+            raise ValidationError("Organizator z tym adresem e-mail już istnieje.")
         # Sprawdź, czy powiązany użytkownik ma typ "organizator"
         if self.id_uzytkownika.typ_uzytkownika != 'organizator':
             raise ValidationError("Tylko użytkownik o typie 'organizator' może być przypisany jako organizator.")
