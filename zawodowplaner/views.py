@@ -166,13 +166,20 @@ class MeczUpdateView(UpdateView):
     success_url = reverse_lazy('mecz-list')
 
 
-# Widoki dla Powiadomień
 class PowiadomienieListView(LoginRequiredMixin, ListView):
     model = powiadomienie
     template_name = 'powiadomienie/list.html'
 
     def get_queryset(self):
-        return self.model.objects.filter(id_uzytkownika=self.request.user)
+        # Pobierz instancję modelu `uzytkownik` powiązaną z aktualnym użytkownikiem
+        try:
+            uzytkownik_instance = uzytkownik.objects.get(email=self.request.user.email)
+        except uzytkownik.DoesNotExist:
+            # Jeśli użytkownik nie istnieje w modelu `uzytkownik`, zwróć pusty queryset
+            return self.model.objects.none()
+
+        # Filtruj powiadomienia dla tego użytkownika
+        return self.model.objects.filter(id_uzytkownika=uzytkownik_instance)
 
 
 class PowiadomienieUpdateView(LoginRequiredMixin, UpdateView):
