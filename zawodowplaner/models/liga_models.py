@@ -1,5 +1,7 @@
 from django.db import models
 from django.core.validators import RegexValidator
+from django.core.exceptions import ValidationError
+from django.utils.timezone import now
 
 from zawodowplaner.models import organizator
 
@@ -33,6 +35,11 @@ class zawody(models.Model):
     class Meta:
         verbose_name = "Zawody"  
         verbose_name_plural = "Zawody"
+
+    def clean(self):
+        if self.data_rozpoczecia >= self.data_zakonczenia:
+            raise ValidationError("Data rozpoczęcia musi być wcześniejsza niż data zakończenia.")
+
 
 class kolejka(models.Model):
     id_kolejki = models.AutoField(primary_key=True)
