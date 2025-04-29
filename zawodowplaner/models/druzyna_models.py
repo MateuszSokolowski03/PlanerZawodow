@@ -1,6 +1,7 @@
 from django.db import models
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 class druzyna(models.Model):
     id_druzyny = models.AutoField(primary_key=True)
@@ -32,9 +33,9 @@ class zgloszenie(models.Model):
         default='oczekujaca',
     )
     data_rejestracji = models.DateTimeField(auto_now_add=True)
-    punkty = models.IntegerField(default=0)
-    bramki_zdobyte = models.IntegerField(default=0)
-    bramki_stracone = models.IntegerField(default=0)
+    punkty = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    bramki_zdobyte = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    bramki_stracone = models.IntegerField(default=0, validators=[MinValueValidator(0)])
 
     class Meta:
         unique_together = ('id_zawodu', 'id_druzyny')
@@ -48,8 +49,6 @@ class zgloszenie(models.Model):
             id_druzyny__id_kapitana=self.id_druzyny.id_kapitana
         ).exclude(pk=self.pk).exists():
             raise ValidationError("Kapitan tej drużyny jest już zgłoszony w tych zawodach.")
-
-
 
     def __str__(self):
         return f"{self.id_druzyny.nazwa} - {self.id_zawodu.nazwa} ({self.status})"
@@ -68,16 +67,20 @@ class zawodnik(models.Model):
 
     id_zawodnika = models.AutoField(primary_key=True)
     id_druzyny = models.ForeignKey('druzyna', on_delete=models.CASCADE)
-    imie = models.CharField(max_length=50)
-    nazwisko = models.CharField(max_length=50)
+    imie = models.CharField(max_length=50, validators=[RegexValidator(r'^[a-zA-Z]+$', 'Imię może zawierać tylko litery.')])
+    nazwisko = models.CharField(max_length=50, validators=[RegexValidator(r'^[a-zA-Z]+$', 'Nazwisko może zawierać tylko litery.')])
     data_urodzenia = models.DateField()
     pozycja = models.CharField(
         max_length=50,
         choices=TYP_POZYCJA_WYBOR,
     )
-    numer_koszulki = models.IntegerField()
+    numer_koszulki = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(99)])
     zdjecie_url = models.URLField(max_length=200, blank=True)
+
+    def clean(self):
+        super().clean()
+        if self.data_urodzenia >= timezone.now().date():
+            raise ValidationError("Data urodzenia musi być w przeszłości.")
 
     def __str__(self):
         return f"{self.imie} {self.nazwisko} ({self.pozycja})"
-    
