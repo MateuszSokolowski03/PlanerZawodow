@@ -3,17 +3,51 @@ from django.urls import reverse_lazy
 from django.views.generic import (
     ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView,
 )
+from .forms import RegistrationForm, FanRegistrationForm, KapitanRegistrationForm, OrganizatorRegistrationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render, redirect
+from django.contrib.auth import login, authenticate
+from zawodowplaner.forms import RegistrationForm
 from .models import (
     zawody, kolejka, druzyna, zgloszenie,
     zawodnik, mecz, wydarzenie, powiadomienie,
     organizator, kapitan, uzytkownik
 )
+from django.contrib.auth.forms import UserCreationForm
+from django.views.generic.edit import CreateView
 
 
 # Widok dla strony poczatkowej
 class HomePageView(TemplateView):
     template_name = 'home.html'
+
+# Widok rejestracji użytkownika
+def register(request):
+    if request.method == 'POST':
+        typ_uzytkownika = request.POST.get('typ_uzytkownika')
+        if typ_uzytkownika == 'fan':
+            form = FanRegistrationForm(request.POST)
+        elif typ_uzytkownika == 'kapitan':
+            form = KapitanRegistrationForm(request.POST)
+        elif typ_uzytkownika == 'organizator':
+            form = OrganizatorRegistrationForm(request.POST)
+        else:
+            form = None
+
+        if form and form.is_valid():
+            user = form.save(commit=False)
+            user.typ_uzytkownika = typ_uzytkownika
+            user.save()
+            return redirect('login')
+    else:
+        form = FanRegistrationForm()
+
+    return render(request, 'registration/register.html', {'form': form})
+
+class RegisterView(CreateView):
+    template_name = 'registration/register.html'
+    form_class = RegistrationForm  # Use the custom RegistrationForm
+    success_url = reverse_lazy('login')
 
 # Widoki dla Organizatorów
 class OrganizatorListView(ListView):

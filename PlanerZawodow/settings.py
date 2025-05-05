@@ -32,7 +32,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'django.contrib.admin',
-    'django.contrib.auth',
+    'django.contrib.auth', 
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -90,7 +90,7 @@ DATABASES = {
         #},
     }
 }
-
+AUTH_USER_MODEL = 'zawodowplaner.uzytkownik'
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -128,6 +128,9 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 ADMIN_URL = 'admin/'
+
+# Redirect users after login
+LOGIN_REDIRECT_URL = '/organizatorzy/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

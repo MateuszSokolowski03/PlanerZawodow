@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Register</h2>
+  <form method="post">
+    {% csrf_token %}
+    <label for="typ_uzytkownika">Choose user type:</label>
+    <select name="typ_uzytkownika" id="typ_uzytkownika">
+      <option value="fan">Fan</option>
+      <option value="kapitan">Kapitan</option>
+      <option value="organizator">Organizator</option>
+    </select>
+    {{ form.as_p }}
+    <button type="submit">Register</button>
+  </form>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const userTypeSelect = document.getElementById('typ_uzytkownika');
+      const lastNameField = document.querySelector('label[for="id_last_name"]').parentElement;
+      const telefonField = document.querySelector('label[for="id_telefon"]').parentElement;
+
+      function toggleFields() {
+        const userType = userTypeSelect.value;
+        if (userType === 'fan') {
+          lastNameField.style.display = 'none';
+          telefonField.style.display = 'none';
+        } else {
+          lastNameField.style.display = '';
+          telefonField.style.display = '';
+        }
+      }
+
+      userTypeSelect.addEventListener('change', toggleFields);
+      toggleFields(); // Initialize on page load
+    });
+  </script>
+{% endblock %}
