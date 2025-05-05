@@ -1,7 +1,7 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from zawodowplaner.models.liga_models import kolejka
-from zawodowplaner.models.mecz import mecz  # Import modelu meczu
+from zawodowplaner.models.mecz_models import mecz
 
 @receiver(post_save, sender=mecz)
 def zakonczenie_kolejki_po_meczu(sender, instance, **kwargs):
