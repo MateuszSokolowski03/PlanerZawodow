@@ -22,19 +22,20 @@ from django.views.generic.edit import CreateView
 # Widok dla strony poczatkowej
 class HomePageView(TemplateView):
     template_name = 'home.html'
-
+    
 class CustomLoginView(LoginView):
     template_name = 'registration/login.html'
 
     def get_success_url(self):
+        # Po zalogowaniu przekierowujemy na odpowiednią stronę
         user = self.request.user
         if user.typ_uzytkownika == 'organizator':
-            return reverse_lazy('organizator-home')  # Przekierowanie na stronę organizatora
+            return reverse_lazy('home')  # Strona startowa dla organizatora
         elif user.typ_uzytkownika == 'kapitan':
             return reverse_lazy('kapitan-start')  # Strona dla kapitana
         elif user.typ_uzytkownika == 'fan':
             return reverse_lazy('fan-start')  # Strona dla fana
-        return reverse_lazy('home') 
+        return reverse_lazy('home')  # Strona domyślna
 
 # Widok rejestracji użytkownika
 def register(request):
