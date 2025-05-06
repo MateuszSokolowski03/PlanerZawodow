@@ -11,6 +11,7 @@ from .models import (
 )
 from .forms import UzytkownikCreationForm, UzytkownikChangeForm
 
+
 @admin.register(uzytkownik)
 class UzytkownikAdmin(UserAdmin):
     add_form = UzytkownikCreationForm

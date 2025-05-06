@@ -15,18 +15,25 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path,include
 from zawodowplaner import views
 from zawodowplaner.views import HomePageView
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', include('zawodowplaner.urls')), 
 
     path('', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login-default'),
 
     # Organizatorzy
+  # Strona główna organizatora
+    path('organizator/home/', views.HomePageView.as_view(), name='organizator-home'),
+
+    # Lista organizatorów
     path('organizatorzy/', views.OrganizatorListView.as_view(), name='organizator-list'),
+
+    # Dodawanie organizatora
     path('organizator/dodaj/', views.OrganizatorCreateView.as_view(), name='organizator-create'),
 
     # Kapitanowie

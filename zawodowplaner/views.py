@@ -1,4 +1,6 @@
-# views.py
+from django.shortcuts import render
+from django.contrib.auth.views import LoginView
+from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views.generic import (
     ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView,
@@ -21,10 +23,24 @@ from django.views.generic.edit import CreateView
 class HomePageView(TemplateView):
     template_name = 'home.html'
 
+class CustomLoginView(LoginView):
+    template_name = 'registration/login.html'
+
+    def get_success_url(self):
+        user = self.request.user
+        if user.typ_uzytkownika == 'organizator':
+            return reverse_lazy('organizator-home')  # Przekierowanie na stronę organizatora
+        elif user.typ_uzytkownika == 'kapitan':
+            return reverse_lazy('kapitan-start')  # Strona dla kapitana
+        elif user.typ_uzytkownika == 'fan':
+            return reverse_lazy('fan-start')  # Strona dla fana
+        return reverse_lazy('home') 
+
 # Widok rejestracji użytkownika
 def register(request):
     if request.method == 'POST':
-        typ_uzytkownika = request.POST.get('typ_uzytkownika')
+        typ_uzytkownika = request.POST.get('typ_uzytkownika', 'fan')
+
         if typ_uzytkownika == 'fan':
             form = FanRegistrationForm(request.POST)
         elif typ_uzytkownika == 'kapitan':
@@ -32,18 +48,45 @@ def register(request):
         elif typ_uzytkownika == 'organizator':
             form = OrganizatorRegistrationForm(request.POST)
         else:
-            form = None
+            form = FanRegistrationForm(request.POST)
 
-        if form and form.is_valid():
+        if form.is_valid():
             user = form.save(commit=False)
             user.typ_uzytkownika = typ_uzytkownika
             user.save()
+
+            if typ_uzytkownika == 'kapitan':
+                kapitan.objects.create(user=user)
+            elif typ_uzytkownika == 'organizator':
+                organizator.objects.create(
+                    user=user,
+                    imie=user.first_name,
+                    nazwisko=user.last_name,
+                    PESEL=form.cleaned_data['PESEL']
+                )
+
             return redirect('login')
     else:
         form = FanRegistrationForm()
 
     return render(request, 'registration/register.html', {'form': form})
+def register_partial(request):
+    typ = request.GET.get('typ_uzytkownika', 'fan')
 
+    if typ == 'fan':
+        form = FanRegistrationForm()
+        template = 'registration/partials/fan_fields.html'
+    elif typ == 'kapitan':
+        form = KapitanRegistrationForm()
+        template = 'registration/partials/kapitan_fields.html'
+    elif typ == 'organizator':
+        form = OrganizatorRegistrationForm()
+        template = 'registration/partials/organizator_fields.html'
+    else:
+        form = FanRegistrationForm()
+        template = 'registration/partials/fan_fields.html'
+
+    return render(request, template, {'form': form})
 class RegisterView(CreateView):
     template_name = 'registration/register.html'
     form_class = RegistrationForm  # Use the custom RegistrationForm

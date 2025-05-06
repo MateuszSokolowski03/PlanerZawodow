@@ -2,9 +2,38 @@
 
 {% block content %}
   <h2>Register</h2>
-  <form method="post">
+
+  <!-- Pokaż błędy ogólne -->
+  {{ form.non_field_errors }}
+
+  <form method="post" id="registration-form">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Register</button>
+    
+    <div class="form-group">
+      <label for="typ_uzytkownika">Typ użytkownika:</label>
+      <select name="typ_uzytkownika" id="typ_uzytkownika" class="form-control" onchange="updateFormFields()">
+        <option value="fan">Fan</option>
+        <option value="kapitan">Kapitan</option>
+        <option value="organizator">Organizator</option>
+      </select>
+    </div>
+    
+    <div id="form-fields">
+      {% include 'registration/partials/fan_fields.html' %}
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Register</button>
   </form>
+
+  <script>
+    function updateFormFields() {
+      const typUzytkownika = document.getElementById('typ_uzytkownika').value;
+      fetch(`/register/partial/?typ_uzytkownika=${typUzytkownika}`)
+        .then(response => response.text())
+        .then(html => {
+          document.getElementById('form-fields').innerHTML = html;
+        })
+        .catch(error => console.error('Error:', error));
+    }
+  </script>
 {% endblock %}

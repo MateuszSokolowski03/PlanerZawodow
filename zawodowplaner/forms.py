@@ -28,7 +28,7 @@ class RegistrationForm(UzytkownikCreationForm):
 class FanRegistrationForm(UserCreationForm):
     class Meta:
         model = uzytkownik
-        fields = ('email', 'first_name', 'password1', 'password2')
+        fields = ('email', 'password1', 'password2')
 
 class KapitanRegistrationForm(UserCreationForm):
     class Meta:
@@ -36,6 +36,8 @@ class KapitanRegistrationForm(UserCreationForm):
         fields = ('email', 'first_name', 'last_name', 'telefon', 'password1', 'password2')
 
 class OrganizatorRegistrationForm(UserCreationForm):
+    PESEL = forms.CharField(max_length=11, required=True, label="PESEL")
+
     class Meta:
         model = uzytkownik
-        fields = ('email', 'first_name', 'last_name', 'telefon', 'password1', 'password2')
+        fields = ('email', 'first_name', 'last_name', 'telefon', 'PESEL', 'password1', 'password2')
