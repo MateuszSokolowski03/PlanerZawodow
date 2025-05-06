@@ -30,7 +30,7 @@ class CustomLoginView(LoginView):
         # Po zalogowaniu przekierowujemy na odpowiednią stronę
         user = self.request.user
         if user.typ_uzytkownika == 'organizator':
-            return reverse_lazy('home')  # Strona startowa dla organizatora
+            return reverse_lazy('organizator-start') # Strona startowa dla organizatora
         elif user.typ_uzytkownika == 'kapitan':
             return reverse_lazy('kapitan-start')  # Strona dla kapitana
         elif user.typ_uzytkownika == 'fan':

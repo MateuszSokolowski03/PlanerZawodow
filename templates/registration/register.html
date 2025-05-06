@@ -4,29 +4,82 @@
   <h2>Register</h2>
   <form method="post">
     {% csrf_token %}
-    <label for="typ_uzytkownika">Choose user type:</label>
+    
+    <!-- Pole dla wyboru typu użytkownika -->
+    <label for="typ_uzytkownika">Wybierz typ użytkownika:</label>
     <select name="typ_uzytkownika" id="typ_uzytkownika">
       <option value="fan">Fan</option>
       <option value="kapitan">Kapitan</option>
       <option value="organizator">Organizator</option>
     </select>
-    {{ form.as_p }}
-    <button type="submit">Register</button>
+    
+    <!-- Dodane pole dla username -->
+    <div>
+      <label for="id_username">Nazwa użytkownika:</label>
+      {{ form.username }}
+    </div>
+
+    <div id="fields-container">
+      <!-- Pola zależne od typu użytkownika -->
+      <div id="imie-nazwisko-telefon">
+        <div>
+          <label for="id_first_name">Imię:</label>
+          {{ form.first_name }}
+        </div>
+        <div>
+          <label for="id_last_name">Nazwisko:</label>
+          {{ form.last_name }}
+        </div>
+        <div>
+          <label for="id_telefon">Telefon:</label>
+          {{ form.telefon }}
+        </div>
+      </div>
+
+      <div id="PESEL-container" style="display:none;">
+        <div>
+          <label for="id_PESEL">PESEL:</label>
+          {{ form.PESEL }}
+        </div>
+      </div>
+
+      <div>
+        <label for="id_email">Email:</label>
+        {{ form.email }}
+      </div>
+
+      <div>
+        <label for="id_password1">Hasło:</label>
+        {{ form.password1 }}
+      </div>
+
+      <div>
+        <label for="id_password2">Potwierdź hasło:</label>
+        {{ form.password2 }}
+      </div>
+
+      <button type="submit">Zarejestruj</button>
+    </div>
   </form>
+
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       const userTypeSelect = document.getElementById('typ_uzytkownika');
-      const lastNameField = document.querySelector('label[for="id_last_name"]').parentElement;
-      const telefonField = document.querySelector('label[for="id_telefon"]').parentElement;
+      const imieNazwiskoTelefon = document.getElementById('imie-nazwisko-telefon');
+      const PESELContainer = document.getElementById('PESEL-container');
 
       function toggleFields() {
         const userType = userTypeSelect.value;
+
         if (userType === 'fan') {
-          lastNameField.style.display = 'none';
-          telefonField.style.display = 'none';
-        } else {
-          lastNameField.style.display = '';
-          telefonField.style.display = '';
+          imieNazwiskoTelefon.style.display = 'none';
+          PESELContainer.style.display = 'none';
+        } else if (userType === 'kapitan') {
+          imieNazwiskoTelefon.style.display = '';
+          PESELContainer.style.display = 'none';
+        } else if (userType === 'organizator') {
+          imieNazwiskoTelefon.style.display = '';
+          PESELContainer.style.display = '';
         }
       }
 

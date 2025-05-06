@@ -11,9 +11,9 @@ class uzytkownik(AbstractUser):
         ('fan', 'Fan'),
     ]
     
-    username = None
+    username = models.CharField(max_length=150, unique=True, default="default_user")
     email = models.EmailField('email address', unique=True)
-    
+
     typ_uzytkownika = models.CharField(
         max_length=20,
         choices=TYP_UZYTKOWNIKA_WYBOR,
@@ -26,9 +26,13 @@ class uzytkownik(AbstractUser):
         null=True
     )
     
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    USERNAME_FIELD = 'email'  # Nadal używamy email jako głównego identyfikatora
+    REQUIRED_FIELDS = ['username']  # Dodajemy username do REQUIRED_FIELDS, aby był wymagany przy tworzeniu użytkownika
 
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
+    
     class Meta:
         verbose_name = "Użytkownik"
         verbose_name_plural = "Użytkownicy"
