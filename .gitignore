@@ -4,3 +4,13 @@ __pycache__/
 venv/
 .env
 .DS_Store
+
+
+SECRET_KEY='django-insecure-sq3nv6qydfqlzdxlf-f1trq7$2+r9oyc4^=zsf0wp(h)h+$^@s'
+DEBUG=True
+
+DB_NAME=railway
+DB_USER=postgres
+DB_PASSWORD=yYyAnZJCEcOFzNsmyJNLwmKIfjjXNSHs
+DB_HOST=shortline.proxy.rlwy.net
+DB_PORT=49709
