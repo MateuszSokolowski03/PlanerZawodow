@@ -8,7 +8,6 @@ from django.views.generic import (
 from .forms import RegistrationForm, FanRegistrationForm, KapitanRegistrationForm, OrganizatorRegistrationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate
 from zawodowplaner.forms import RegistrationForm
 from .models import (
     zawody, kolejka, druzyna, zgloszenie,

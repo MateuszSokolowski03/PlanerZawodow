@@ -4,9 +4,12 @@ from .models import uzytkownik
 from django.contrib.auth.models import BaseUserManager
 
 class UzytkownikCreationForm(UserCreationForm):
+    username = forms.CharField(max_length=150, required=True, label="Nazwa użytkownika")
+
     class Meta:
         model = uzytkownik
-        fields = ('email', 'first_name', 'last_name', 'telefon', 'typ_uzytkownika')
+        fields = ('username', 'email', 'first_name', 'last_name', 'telefon', 'typ_uzytkownika')
+
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -31,11 +34,11 @@ class UzytkownikManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, username, password=None, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
+#    def create_superuser(self, email, username, password=None, **extra_fields):
+#        extra_fields.setdefault('is_staff', True)
+#        extra_fields.setdefault('is_superuser', True)
 
-        return self.create_user(email, username, password, **extra_fields)
+#        return self.create_user(email, username, password, **extra_fields)
     
 
     def create_superuser(self, email, password=None, **extra_fields):
@@ -63,18 +66,24 @@ class RegistrationForm(UzytkownikCreationForm):
         fields = UzytkownikCreationForm.Meta.fields
 
 class FanRegistrationForm(UserCreationForm):
+    username = forms.CharField(max_length=150, required=True, label="Nazwa użytkownika")
+
     class Meta:
         model = uzytkownik
-        fields = ('email', 'password1', 'password2')
+        fields = ('username', 'email', 'password1', 'password2')
 
 class KapitanRegistrationForm(UserCreationForm):
+    username = forms.CharField(max_length=150, required=True, label="Nazwa użytkownika")
+
     class Meta:
         model = uzytkownik
-        fields = ('email', 'first_name', 'last_name', 'telefon', 'password1', 'password2')
+        fields = ('username', 'email', 'first_name', 'last_name', 'telefon', 'password1', 'password2')
 
 class OrganizatorRegistrationForm(UserCreationForm):
+    username = forms.CharField(max_length=150, required=True, label="Nazwa użytkownika")
     PESEL = forms.CharField(max_length=11, required=True, label="PESEL")
 
     class Meta:
         model = uzytkownik
-        fields = ('email', 'first_name', 'last_name', 'telefon', 'PESEL', 'password1', 'password2')
+        fields = ('username', 'email', 'first_name', 'last_name', 'telefon', 'PESEL', 'password1', 'password2')
+
