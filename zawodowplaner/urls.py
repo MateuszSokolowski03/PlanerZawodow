@@ -5,7 +5,7 @@ from .views import register, OrganizatorListView, register_partial
 from .views import register_partial
 from .views import CustomLoginView
 from django.views.generic import TemplateView
-
+from . import views
 
 
 urlpatterns = [
@@ -16,4 +16,5 @@ urlpatterns = [
     path('register/partial/', register_partial, name='register_partial'),
     path('kapitan/start/', TemplateView.as_view(template_name='kapitan/start.html'), name='kapitan-start'),
     path('fan/start/', TemplateView.as_view(template_name='fan/start.html'), name='fan-start'),
+    path('', views.home_view, name='home'),  # Strona główna
 ]
