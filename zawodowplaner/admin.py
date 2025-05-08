@@ -80,7 +80,7 @@ class ZawodyAdmin(admin.ModelAdmin):
     readonly_fields = ()
     fieldsets = (
         ('Informacje podstawowe', {
-            'fields': ('nazwa', 'organizator', 'opis')
+            'fields': ('nazwa', 'id_organizatora', 'opis')
         }),
         ('Terminy', {
             'fields': ('data_rozpoczecia', 'data_zakonczenia')
