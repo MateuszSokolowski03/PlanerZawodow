@@ -16,7 +16,7 @@ from .models import (
 )
 from django.contrib.auth.forms import UserCreationForm
 from django.views.generic.edit import CreateView
-
+from .models import mecz #pobieranie danych o meczach
 
 # Widok dla strony poczatkowej
 class HomePageView(TemplateView):
@@ -278,3 +278,8 @@ class ZawodnikUpdateView(UpdateView):
     template_name = 'zawodnik/form.html'
     fields = ['pozycja', 'numer_koszulki', 'zdjecie_url']
     success_url = reverse_lazy('druzyna-list')
+
+#widok strony startowej
+def home_view(request):
+    mecze = mecz.objects.all()  # Pobierz wszystkie mecze z bazy danych
+    return render(request, 'zawodowplaner/zawody.html', {'mecze': mecze})

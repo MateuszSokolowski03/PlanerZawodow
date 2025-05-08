@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planer Zawodów</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#4f46e5',secondary:'#f97316'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+<style>
+:where([class^="ri-"])::before { content: "\f3c2"; }
+body {
+font-family: 'Inter', sans-serif;
+background-color: #f9fafb;
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+-webkit-appearance: none;
+margin: 0;
+}
+input[type="number"] {
+-moz-appearance: textfield;
+}
+.tab-active {
+color: #4f46e5;
+border-bottom: 2px solid #4f46e5;
+}
+.status-active {
+background-color: rgba(16, 185, 129, 0.1);
+color: rgb(16, 185, 129);
+}
+.status-planned {
+background-color: rgba(79, 70, 229, 0.1);
+color: #4f46e5;
+}
+.status-finished {
+background-color: rgba(107, 114, 128, 0.1);
+color: rgb(107, 114, 128);
+}
+.custom-switch {
+position: relative;
+display: inline-block;
+width: 48px;
+height: 24px;
+}
+.custom-switch input {
+opacity: 0;
+width: 0;
+height: 0;
+}
+.switch-slider {
+position: absolute;
+cursor: pointer;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background-color: #e5e7eb;
+transition: .4s;
+border-radius: 24px;
+}
+.switch-slider:before {
+position: absolute;
+content: "";
+height: 18px;
+width: 18px;
+left: 3px;
+bottom: 3px;
+background-color: white;
+transition: .4s;
+border-radius: 50%;
+}
+input:checked + .switch-slider {
+background-color: #4f46e5;
+}
+input:checked + .switch-slider:before {
+transform: translateX(24px);
+}
+.custom-checkbox {
+position: relative;
+display: inline-block;
+width: 20px;
+height: 20px;
+}
+.custom-checkbox input {
+opacity: 0;
+width: 0;
+height: 0;
+}
+.checkbox-mark {
+position: absolute;
+top: 0;
+left: 0;
+height: 20px;
+width: 20px;
+background-color: #fff;
+border: 2px solid #e5e7eb;
+border-radius: 4px;
+}
+.custom-checkbox input:checked ~ .checkbox-mark {
+background-color: #4f46e5;
+border-color: #4f46e5;
+}
+.checkbox-mark:after {
+content: "";
+position: absolute;
+display: none;
+}
+.custom-checkbox input:checked ~ .checkbox-mark:after {
+display: block;
+}
+.custom-checkbox .checkbox-mark:after {
+left: 6px;
+top: 2px;
+width: 5px;
+height: 10px;
+border: solid white;
+border-width: 0 2px 2px 0;
+transform: rotate(45deg);
+}
+.custom-radio {
+position: relative;
+display: inline-block;
+width: 20px;
+height: 20px;
+}
+.custom-radio input {
+opacity: 0;
+width: 0;
+height: 0;
+}
+.radio-mark {
+position: absolute;
+top: 0;
+left: 0;
+height: 20px;
+width: 20px;
+background-color: #fff;
+border: 2px solid #e5e7eb;
+border-radius: 50%;
+}
+.custom-radio input:checked ~ .radio-mark {
+border-color: #4f46e5;
+}
+.radio-mark:after {
+content: "";
+position: absolute;
+display: none;
+}
+.custom-radio input:checked ~ .radio-mark:after {
+display: block;
+}
+.custom-radio .radio-mark:after {
+top: 4px;
+left: 4px;
+width: 8px;
+height: 8px;
+border-radius: 50%;
+background: #4f46e5;
+}
+</style>
+</head>
+<body>
+<div class="min-h-screen flex flex-col">
+<!-- Nagłówek i Nawigacja -->
+<header class="bg-white shadow-sm">
+<div class="container mx-auto px-4 py-3 flex items-center justify-between">
+<div class="flex items-center">
+<h1 class="text-2xl font-['Pacifico'] text-primary">logo</h1>
+</div>
+<div class="flex items-center space-x-4">
+<div class="relative">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 relative">
+<i class="ri-notification-3-line text-gray-600 ri-lg"></i>
+<span class="absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">3</span>
+</button>
+</div>
+<button class="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 !rounded-button hover:bg-gray-50 whitespace-nowrap">
+<i class="ri-logout-box-line mr-2"></i>
+Wyloguj
+</button>
+</div>
+</div>
+</header>
+<!-- Menu Główne -->
+<nav class="bg-white shadow-sm">
+<div class="container mx-auto px-4">
+<div class="flex space-x-8">
+<button class="tab-active px-4 py-4 text-sm font-medium">Zawody</button>
+<button class="px-4 py-4 text-sm font-medium text-gray-500 hover:text-gray-700">Kolejki</button>
+<button class="px-4 py-4 text-sm font-medium text-gray-500 hover:text-gray-700">Mecze</button>
+<button class="px-4 py-4 text-sm font-medium text-gray-500 hover:text-gray-700">Wydarzenia</button>
+<button class="px-4 py-4 text-sm font-medium text-gray-500 hover:text-gray-700">Zgłoszenia</button>
+</div>
+</div>
+</nav>
+<!-- Główna zawartość -->
+<main class="flex-grow py-6 px-4">
+<div class="container mx-auto">
+<!-- Panel Zawodów -->
+<div id="zawody-panel" class="bg-white rounded shadow-sm p-6">
+<div class="flex flex-wrap items-center justify-between mb-6">
+<h2 class="text-xl font-semibold text-gray-800">Zawody</h2>
+<div class="flex space-x-2 mt-2 sm:mt-0">
+<div class="relative">
+<input type="text" placeholder="Szukaj zawodów..." class="pl-10 pr-4 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+<div class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 flex items-center justify-center">
+<i class="ri-search-line text-gray-400"></i>
+</div>
+</div>
+<div class="relative">
+<button class="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 !rounded-button hover:bg-gray-50 whitespace-nowrap">
+<i class="ri-filter-3-line mr-2"></i>
+Filtruj
+</button>
+</div>
+<button class="flex items-center px-4 py-2 text-sm font-medium text-white bg-primary !rounded-button hover:bg-primary/90 whitespace-nowrap">
+<i class="ri-add-line mr-2"></i>
+Dodaj nowe zawody
+</button>
+</div>
+</div>
+<!-- Lista zawodów -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+<!-- Zawody 1 -->
+<div class="bg-white border border-gray-200 rounded p-4 hover:shadow-md transition">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-lg font-medium text-gray-800">Mistrzostwa Województwa Juniorów</h3>
+<span class="status-active text-xs font-medium px-2 py-1 rounded-full">W trakcie</span>
+</div>
+<div class="text-sm text-gray-600 mb-3">
+<div class="flex items-center mb-1">
+<div class="w-5 h-5 flex items-center justify-center mr-2">
+<i class="ri-calendar-line text-gray-500"></i>
+</div>
+<span>07.05.2025 - 15.05.2025</span>
+</div>
+<div class="flex items-center">
+<div class="w-5 h-5 flex items-center justify-center mr-2">
+<i class="ri-user-line text-gray-500"></i>
+</div>
+<span>24 uczestników</span>
+</div>
+</div>
+<div class="flex justify-end">
+<button class="text-primary hover:text-primary/80 text-sm font-medium">Szczegóły</button>
+</div>
+</div>
+<!-- Zawody 2 -->
+<div class="bg-white border border-gray-200 rounded p-4 hover:shadow-md transition">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-lg font-medium text-gray-800">Turniej Piłki Nożnej "Orlik Cup"</h3>
+<span class="status-planned text-xs font-medium px-2 py-1 rounded-full">Planowane</span>
+</div>
+<div class="text-sm text-gray-600 mb-3">
+<div class="flex items-center mb-1">
+<div class="w-5 h-5 flex items-center justify-center mr-2">
+<i class="ri-calendar-line text-gray-500"></i>
+</div>
+<span>20.05.2025 - 22.05.2025</span>
+</div>
+<div class="flex items-center">
+<div class="w-5 h-5 flex items-center justify-center mr-2">
+<i class="ri-user-line text-gray-500"></i>
+</div>
+<span>16 uczestników</span>
+</div>
+</div>
+<div class="flex justify-end">
+<button class="text-primary hover:text-primary/80 text-sm font-medium">Szczegóły</button>
+</div>
+</div>
+<!-- Zawody 3 -->
+<div class="bg-white border border-gray-200 rounded p-4 hover:shadow-md transition">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-lg font-medium text-gray-800">Zawody Pływackie "Błękitna Fala"</h3>
+<span class="status-finished text-xs font-medium px-2 py-1 rounded-full">Zakończone</span>
+</div>
+<div class="text-sm text-gray-600 mb-3">
+<div class="flex items-center mb-1">
+<div class="w-5 h-5 flex items-center justify-center mr-2">
+<i class="ri-calendar-line text-gray-500"></i>
+</div>
+<span>01.05.2025 - 03.05.2025</span>
+</div>
+<div class="flex items-center">
+<div class="w-5 h-5 flex items-center justify-center mr-2">
+<i class="ri-user-line text-gray-500"></i>
+</div>
+<span>32 uczestników</span>
+</div>
+</div>
+<div class="flex justify-end">
+<button class="text-primary hover:text-primary/80 text-sm font-medium">Szczegóły</button>
+</div>
+</div>
+<!-- Zawody 4 -->
+<div class="bg-white border border-gray-200 rounded p-4 hover:shadow-md transition">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-lg font-medium text-gray-800">Turniej Siatkówki Plażowej</h3>
+<span class="status-planned text-xs font-medium px-2 py-1 rounded-full">Planowane</span>
+</div>
+<div class="text-sm text-gray-600 mb-3">
+<div class="flex items-center mb-1">
+<div class="w-5 h-5 flex items-center justify-center mr-2">
+<i class="ri-calendar-line text-gray-500"></i>
+</div>
+<span>10.06.2025 - 12.06.2025</span>
+</div>
+<div class="flex items-center">
+<div class="w-5 h-5 flex items-center justify-center mr-2">
+<i class="ri-user-line text-gray-500"></i>
+</div>
+<span>20 uczestników</span>
+</div>
+</div>
+<div class="flex justify-end">
+<button class="text-primary hover:text-primary/80 text-sm font-medium">Szczegóły</button>
+</div>
+</div>
+<!-- Zawody 5 -->
+<div class="bg-white border border-gray-200 rounded p-4 hover:shadow-md transition">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-lg font-medium text-gray-800">Mistrzostwa Regionalne w Tenisie</h3>
+<span class="status-active text-xs font-medium px-2 py-1 rounded-full">W trakcie</span>
+</div>
+<div class="text-sm text-gray-600 mb-3">
+<div class="flex items-center mb-1">
+<div class="w-5 h-5 flex items-center justify-center mr-2">
+<i class="ri-calendar-line text-gray-500"></i>
+</div>
+<span>05.05.2025 - 12.05.2025</span>
+</div>
+<div class="flex items-center">
+<div class="w-5 h-5 flex items-center justify-center mr-2">
+<i class="ri-user-line text-gray-500"></i>
+</div>
+<span>28 uczestników</span>
+</div>
+</div>
+<div class="flex justify-end">
+<button class="text-primary hover:text-primary/80 text-sm font-medium">Szczegóły</button>
+</div>
+</div>
+<!-- Zawody 6 -->
+<div class="bg-white border border-gray-200 rounded p-4 hover:shadow-md transition">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-lg font-medium text-gray-800">Zawody Lekkoatletyczne "Sprint"</h3>
+<span class="status-finished text-xs font-medium px-2 py-1 rounded-full">Zakończone</span>
+</div>
+<div class="text-sm text-gray-600 mb-3">
+<div class="flex items-center mb-1">
+<div class="w-5 h-5 flex items-center justify-center mr-2">
+<i class="ri-calendar-line text-gray-500"></i>
+</div>
+<span>28.04.2025 - 30.04.2025</span>
+</div>
+<div class="flex items-center">
+<div class="w-5 h-5 flex items-center justify-center mr-2">
+<i class="ri-user-line text-gray-500"></i>
+</div>
+<span>45 uczestników</span>
+</div>
+</div>
+<div class="flex justify-end">
+<button class="text-primary hover:text-primary/80 text-sm font-medium">Szczegóły</button>
+</div>
+</div>
+</div>
+<!-- Paginacja -->
+<div class="flex justify-center mt-6">
+<nav class="inline-flex rounded-md shadow-sm">
+<button class="px-3 py-1 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+<i class="ri-arrow-left-s-line"></i>
+</button>
+<button class="px-3 py-1 border-t border-b border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">1</button>
+<button class="px-3 py-1 border-t border-b border-gray-300 bg-primary text-sm font-medium text-white">2</button>
+<button class="px-3 py-1 border-t border-b border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">3</button>
+<button class="px-3 py-1 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+<i class="ri-arrow-right-s-line"></i>
+</button>
+</nav>
+</div>
+</div>
+<!-- Panel Kolejek (ukryty domyślnie) -->
+<div id="kolejki-panel" class="hidden bg-white rounded shadow-sm p-6">
+<div class="flex flex-wrap items-center justify-between mb-6">
+<h2 class="text-xl font-semibold text-gray-800">Kolejki</h2>
+<div class="flex space-x-2 mt-2 sm:mt-0">
+<div class="relative">
+<button class="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 !rounded-button hover:bg-gray-50 whitespace-nowrap">
+<i class="ri-filter-3-line mr-2"></i>
+Filtruj
+</button>
+</div>
+<button class="flex items-center px-4 py-2 text-sm font-medium text-white bg-primary !rounded-button hover:bg-primary/90 whitespace-nowrap">
+<i class="ri-add-line mr-2"></i>
+Dodaj nową kolejkę
+</button>
+</div>
+</div>
+<!-- Kalendarz kolejek -->
+<div class="mb-6">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-medium text-gray-800">Maj 2025</h3>
+<div class="flex space-x-2">
+<button class="p-2 rounded hover:bg-gray-100">
+<i class="ri-arrow-left-s-line"></i>
+</button>
+<button class="p-2 rounded hover:bg-gray-100">
+<i class="ri-arrow-right-s-line"></i>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-7 gap-2 text-center text-sm font-medium text-gray-500 mb-2">
+<div>Pon</div>
+<div>Wt</div>
+<div>Śr</div>
+<div>Czw</div>
+<div>Pt</div>
+<div>Sob</div>
+<div>Nie</div>
+</div>
+<div class="grid grid-cols-7 gap-2">
+<!-- Dni poprzedniego miesiąca -->
+<div class="h-24 p-1 border border-gray-200 rounded bg-gray-50 text-gray-400">28</div>
+<div class="h-24 p-1 border border-gray-200 rounded bg-gray-50 text-gray-400">29</div>
+<div class="h-24 p-1 border border-gray-200 rounded bg-gray-50 text-gray-400">30</div>
+<div class="h-24 p-1 border border-gray-200 rounded bg-gray-50 text-gray-400">1</div>
+<div class="h-24 p-1 border border-gray-200 rounded bg-gray-50 text-gray-400">2</div>
+<div class="h-24 p-1 border border-gray-200 rounded bg-gray-50 text-gray-400">3</div>
+<div class="h-24 p-1 border border-gray-200 rounded bg-gray-50 text-gray-400">4</div>
+<!-- Pierwszy tydzień maja -->
+<div class="h-24 p-1 border border-gray-200 rounded">
+<div class="text-sm font-medium">5</div>
+<div class="mt-1 text-xs bg-blue-100 text-blue-800 p-1 rounded">
+Mistrzostwa Tenisa: Kolejka 1
+</div>
+</div>
+<div class="h-24 p-1 border border-gray-200 rounded">
+<div class="text-sm font-medium">6</div>
+<div class="mt-1 text-xs bg-blue-100 text-blue-800 p-1 rounded">
+Mistrzostwa Tenisa: Kolejka 2
+</div>
+</div>
+<div class="h-24 p-1 border border-gray-200 rounded bg-yellow-50">
+<div class="text-sm font-medium text-primary">7</div>
+<div class="mt-1 text-xs bg-primary/10 text-primary p-1 rounded">
+Mistrzostwa Juniorów: Kolejka 1
+</div>
+<div class="mt-1 text-xs bg-blue-100 text-blue-800 p-1 rounded">
+Mistrzostwa Tenisa: Kolejka 3
+</div>
+</div>
+<div class="h-24 p-1 border border-gray-200 rounded">
+<div class="text-sm font-medium">8</div>
+<div class="mt-1 text-xs bg-primary/10 text-primary p-1 rounded">
+Mistrzostwa Juniorów: Kolejka 2
+</div>
+</div>
+<div class="h-24 p-1 border border-gray-200 rounded">
+<div class="text-sm font-medium">9</div>
+<div class="mt-1 text-xs bg-primary/10 text-primary p-1 rounded">
+Mistrzostwa Juniorów: Kolejka 3
+</div>
+</div>
+<div class="h-24 p-1 border border-gray-200 rounded">
+<div class="text-sm font-medium">10</div>
+<div class="mt-1 text-xs bg-primary/10 text-primary p-1 rounded">
+Mistrzostwa Juniorów: Kolejka 4
+</div>
+</div>
+<div class="h-24 p-1 border border-gray-200 rounded">
+<div class="text-sm font-medium">11</div>
+</div>
+<!-- Drugi tydzień maja -->
+<div class="h-24 p-1 border border-gray-200 rounded">
+<div class="text-sm font-medium">12</div>
+<div class="mt-1 text-xs bg-primary/10 text-primary p-1 rounded">
+Mistrzostwa Juniorów: Kolejka 5
+</div>
+</div>
+<div class="h-24 p-1 border border-gray-200 rounded">
+<div class="text-sm font-medium">13</div>
+<div class="mt-1 text-xs bg-primary/10 text-primary p-1 rounded">
+Mistrzostwa Juniorów: Kolejka 6
+</div>
+</div>
+<div class="h-24 p-1 border border-gray-200 rounded">
+<div class="text-sm font-medium">14</div>
+<div class="mt-1 text-xs bg-primary/10 text-primary p-1 rounded">
+Mistrzostwa Juniorów: Finały
+</div>
+</div>
+<div class="h-24 p-1 border border-gray-200 rounded">
+<div class="text-sm font-medium">15</div>
+</div>
+<div class="h-24 p-1 border border-gray-200 rounded">
+<div class="text-sm font-medium">16</div>
+</div>
+<div class="h-24 p-1 border border-gray-200 rounded">
+<div class="text-sm font-medium">17</div>
+</div>
+<div class="h-24 p-1 border border-gray-200 rounded">
+<div class="text-sm font-medium">18</div>
+</div>
+<!-- Trzeci tydzień maja -->
+<div class="h-24 p-1 border border-gray-200 rounded">
+<div class="text-sm font-medium">19</div>
+</div>
+<div class="h-24 p-1 border border-gray-200 rounded">
+<div class="text-sm font-medium">20</div>
+<div class="mt-1 text-xs bg-green-100 text-green-800 p-1 rounded">
+Orlik Cup: Eliminacje
+</div>
+</div>
+<div class="h-24 p-1 border border-gray-200 rounded">
+<div class="text-sm font-medium">21</div>
+<div class="mt-1 text-xs bg-green-100 text-green-800 p-1 rounded">
+Orlik Cup: Półfinały
+</div>
+</div>
+<div class="h-24 p-1 border border-gray-200 rounded">
+<div class="text-sm font-medium">22</div>
+<div class="mt-1 text-xs bg-green-100 text-green-800 p-1 rounded">
+Orlik Cup: Finały
+</div>
+</div>
+<div class="h-24 p-1 border border-gray-200 rounded">
+<div class="text-sm font-medium">23</div>
+</div>
+<div class="h-24 p-1 border border-gray-200 rounded">
+<div class="text-sm font-medium">24</div>
+</div>
+<div class="h-24 p-1 border border-gray-200 rounded">
+<div class="text-sm font-medium">25</div>
+</div>
+</div>
+</div>
+<!-- Lista kolejek -->
+<div class="mt-8">
+<h3 class="text-lg font-medium text-gray-800 mb-4">Nadchodzące kolejki</h3>
+<div class="overflow-x-auto">
+<table class="min-w-full divide-y divide-gray-200">
+<thead class="bg-gray-50">
+<tr>
+<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nazwa kolejki</th>
+<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Zawody</th>
+<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data</th>
+<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Miejsce</th>
+<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+<th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Akcje</th>
+</tr>
+</thead>
+<tbody class="bg-white divide-y divide-gray-200">
+<tr>
+<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Kolejka 1</td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Mistrzostwa Juniorów</td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">07.05.2025, 10:00</td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Hala Sportowa "Centrum"</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<span class="status-active text-xs font-medium px-2 py-1 rounded-full">W trakcie</span>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+<button class="text-primary hover:text-primary/80">Edytuj</button>
+</td>
+</tr>
+<tr>
+<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Kolejka 2</td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Mistrzostwa Juniorów</td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">08.05.2025, 10:00</td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Hala Sportowa "Centrum"</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<span class="status-planned text-xs font-medium px-2 py-1 rounded-full">Planowane</span>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+<button class="text-primary hover:text-primary/80">Edytuj</button>
+</td>
+</tr>
+<tr>
+<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Kolejka 3</td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Mistrzostwa Tenisa</td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">07.05.2025, 14:00</td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Korty Tenisowe "Rakieta"</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<span class="status-active text-xs font-medium px-2 py-1 rounded-full">W trakcie</span>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+<button class="text-primary hover:text-primary/80">Edytuj</button>
+</td>
+</tr>
+<tr>
+<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Eliminacje</td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Orlik Cup</td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">20.05.2025, 09:00</td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Boisko "Orlik" przy SP nr 5</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<span class="status-planned text-xs font-medium px-2 py-1 rounded-full">Planowane</span>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+<button class="text-primary hover:text-primary/80">Edytuj</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Panel Meczów (ukryty domyślnie) -->
+<div id="mecze-panel" class="hidden bg-white rounded shadow-sm p-6">
+<div class="flex flex-wrap items-center justify-between mb-6">
+<h2 class="text-xl font-semibold text-gray-800">Mecze</h2>
+<div class="flex space-x-2 mt-2 sm:mt-0">
+<div class="inline-flex rounded-md shadow-sm" role="group">
+<button class="px-4 py-2 text-sm font-medium text-white bg-primary !rounded-l-button">Dzisiaj</button>
+<button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border-t border-b border-gray-300">Tydzień</button>
+<button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 !rounded-r-button">Miesiąc</button>
+</div>
+<button class="flex items-center px-4 py-2 text-sm font-medium text-white bg-primary !rounded-button hover:bg-primary/90 whitespace-nowrap">
+<i class="ri-add-line mr-2"></i>
+Dodaj mecz
+</button>
+</div>
+</div>
+<!-- Lista meczów -->
+<div class="mb-6">
+<h3 class="text-lg font-medium text-gray-800 mb-4">Mecze na dzisiaj (07.05.2025)</h3>
+<div class="overflow-x-auto">
+<table class="min-w-full divide-y divide-gray-200">
+<thead class="bg-gray-50">
+<tr>
+<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Czas</th>
+<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Drużyna/Zawodnik 1</th>
+<th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Wynik</th>
+<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Drużyna/Zawodnik 2</th>
+<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Miejsce</th>
+<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+<th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Akcje</th>
+</tr>
+</thead>
+<tbody class="bg-white divide-y divide-gray-200">
+    <tbody class="bg-white divide-y divide-gray-200">
+        {% for mecz in mecze %}
+        <tr>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ mecz.data_meczu|date:"H:i" }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ mecz.druzyna_gospodarz }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-center font-bold">{{ mecz.wynik_gospodarz }} : {{ mecz.wynik_gosc }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ mecz.druzyna_gosc }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ mecz.miejsce }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <span class="status-planned text-xs font-medium px-2 py-1 rounded-full">
+                    {{ mecz.status }}
+                </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <button class="text-primary hover:text-primary/80 mr-2">Edytuj</button>
+                <button class="text-primary hover:text-primary/80">Wynik</button>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500">Brak meczów do wyświetlenia.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+</div>
+<!-- Statystyki meczów -->
+<div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="bg-white border border-gray-200 rounded p-4">
+<h4 class="text-base font-medium text-gray-800 mb-2">Mecze dzisiaj</h4>
+<div class="flex items-center">
+<div class="w-16 h-16 flex items-center justify-center bg-primary/10 rounded-full text-primary text-2xl font-bold">
+8
+</div>
+<div class="ml-4">
+<div class="text-sm text-gray-600">
+<div class="flex items-center mb-1">
+<div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+<span>3 zakończone</span>
+</div>
+<div class="flex items-center mb-1">
+<div class="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
+<span>2 w trakcie</span>
+</div>
+<div class="flex items-center">
+<div class="w-3 h-3 bg-gray-300 rounded-full mr-2"></div>
+<span>3 planowane</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white border border-gray-200 rounded p-4">
+<h4 class="text-base font-medium text-gray-800 mb-2">Mecze w tym tygodniu</h4>
+<div class="flex items-center">
+<div class="w-16 h-16 flex items-center justify-center bg-primary/10 rounded-full text-primary text-2xl font-bold">
+32
+</div>
+<div class="ml-4">
+<div class="text-sm text-gray-600">
+<div class="flex items-center mb-1">
+<div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+<span>10 zakończonych</span>
+</div>
+<div class="flex items-center mb-1">
+<div class="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
+<span>5 w trakcie</span>
+</div>
+<div class="flex items-center">
+<div class="w-3 h-3 bg-gray-300 rounded-full mr-2"></div>
+<span>17 planowanych</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white border border-gray-200 rounded p-4">
+<h4 class="text-base font-medium text-gray-800 mb-2">Mecze w tym miesiącu</h4>
+<div class="flex items-center">
+<div class="w-16 h-16 flex items-center justify-center bg-primary/10 rounded-full text-primary text-2xl font-bold">
+124
+</div>
+<div class="ml-4">
+<div class="text-sm text-gray-600">
+<div class="flex items-center mb-1">
+<div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+<span>45 zakończonych</span>
+</div>
+<div class="flex items-center mb-1">
+<div class="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
+<span>12 w trakcie</span>
+</div>
+<div class="flex items-center">
+<div class="w-3 h-3 bg-gray-300 rounded-full mr-2"></div>
+<span>67 planowanych</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Panel Wydarzeń (ukryty domyślnie) -->
+<div id="wydarzenia-panel" class="hidden bg-white rounded shadow-sm p-6">
+<div class="flex flex-wrap items-center justify-between mb-6">
+<h2 class="text-xl font-semibold text-gray-800">Wydarzenia</h2>
+<div class="flex space-x-2 mt-2 sm:mt-0">
+<div class="relative">
+<button class="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 !rounded-button hover:bg-gray-50 whitespace-nowrap">
+<i class="ri-filter-3-line mr-2"></i>
+Filtruj
+</button>
+</div>
+<button class="flex items-center px-4 py-2 text-sm font-medium text-white bg-primary !rounded-button hover:bg-primary/90 whitespace-nowrap">
+<i class="ri-add-line mr-2"></i>
+Dodaj wydarzenie
+</button>
+</div>
+</div>
+<!-- Kategorie wydarzeń -->
+<div class="mb-6">
+<div class="flex flex-wrap gap-2">
+<label class="inline-flex items-center">
+<span class="custom-checkbox">
+<input type="checkbox" checked>
+<span class="checkbox-mark"></span>
+</span>
+<span class="ml-2 text-sm text-gray-700">Wszystkie</span>
+</label>
+<label class="inline-flex items-center">
+<span class="custom-checkbox">
+<input type="checkbox" checked>
+<span class="checkbox-mark"></span>
+</span>
+<span class="ml-2 text-sm text-gray-700">Treningi</span>
+</label>
+<label class="inline-flex items-center">
+<span class="custom-checkbox">
+<input type="checkbox" checked>
+<span class="checkbox-mark"></span>
+</span>
+<span class="ml-2 text-sm text-gray-700">Spotkania</span>
+</label>
+<label class="inline-flex items-center">
+<span class="custom-checkbox">
+<input type="checkbox" checked>
+<span class="checkbox-mark"></span>
+</span>
+<span class="ml-2 text-sm text-gray-700">Konferencje</span>
+</label>
+<label class="inline-flex items-center">
+<span class="custom-checkbox">
+<input type="checkbox" checked>
+<span class="checkbox-mark"></span>
+</span>
+<span class="ml-2 text-sm text-gray-700">Inne</span>
+</label>
+</div>
+</div>
+<!-- Timeline wydarzeń -->
+<div class="relative">
+<div class="absolute left-8 top-0 bottom-0 w-0.5 bg-gray-200"></div>
+<!-- Dzisiaj -->
+<div class="mb-8">
+<h3 class="text-lg font-medium text-gray-800 mb-4">Dzisiaj (07.05.2025)</h3>
+<!-- Wydarzenie 1 -->
+<div class="relative pl-20 pb-8">
+<div class="absolute left-0 top-0 w-16 text-sm text-gray-500">09:00</div>
+<div class="absolute left-8 top-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center z-10">
+<i class="ri-calendar-event-line text-white text-xs"></i>
+</div>
+<div class="bg-white border border-gray-200 rounded p-4 ml-4">
+<div class="flex justify-between items-start mb-2">
+<h4 class="text-base font-medium text-gray-800">Odprawa trenerów przed Mistrzostwami Juniorów</h4>
+<span class="text-xs font-medium px-2 py-1 bg-blue-100 text-blue-800 rounded-full">Spotkanie</span>
+</div>
+<p class="text-sm text-gray-600 mb-3">Sala konferencyjna "A", Hala Sportowa "Centrum"</p>
+<div class="flex items-center text-sm text-gray-500">
+<div class="w-5 h-5 flex items-center justify-center mr-1">
+<i class="ri-time-line"></i>
+</div>
+<span>1 godzina</span>
+</div>
+</div>
+</div>
+<!-- Wydarzenie 2 -->
+<div class="relative pl-20 pb-8">
+<div class="absolute left-0 top-0 w-16 text-sm text-gray-500">13:00</div>
+<div class="absolute left-8 top-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center z-10">
+<i class="ri-run-line text-white text-xs"></i>
+</div>
+<div class="bg-white border border-gray-200 rounded p-4 ml-4">
+<div class="flex justify-between items-start mb-2">
+<h4 class="text-base font-medium text-gray-800">Trening rozgrzewkowy dla tenisistów</h4>
+<span class="text-xs font-medium px-2 py-1 bg-green-100 text-green-800 rounded-full">Trening</span>
+</div>
+<p class="text-sm text-gray-600 mb-3">Korty Tenisowe "Rakieta", korty 1-2</p>
+<div class="flex items-center text-sm text-gray-500">
+<div class="w-5 h-5 flex items-center justify-center mr-1">
+<i class="ri-time-line"></i>
+</div>
+<span>45 minut</span>
+</div>
+</div>
+</div>
+<!-- Wydarzenie 3 -->
+<div class="relative pl-20 pb-8">
+<div class="absolute left-0 top-0 w-16 text-sm text-gray-500">18:30</div>
+<div class="absolute left-8 top-2 w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center z-10">
+<i class="ri-mic-line text-white text-xs"></i>
+</div>
+<div class="bg-white border border-gray-200 rounded p-4 ml-4">
+<div class="flex justify-between items-start mb-2">
+<h4 class="text-base font-medium text-gray-800">Konferencja prasowa po pierwszym dniu zawodów</h4>
+<span class="text-xs font-medium px-2 py-1 bg-orange-100 text-orange-800 rounded-full">Konferencja</span>
+</div>
+<p class="text-sm text-gray-600 mb-3">Sala konferencyjna "B", Hala Sportowa "Centrum"</p>
+<div class="flex items-center text-sm text-gray-500">
+<div class="w-5 h-5 flex items-center justify-center mr-1">
+<i class="ri-time-line"></i>
+</div>
+<span>1 godzina</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Jutro -->
+<div class="mb-8">
+<h3 class="text-lg font-medium text-gray-800 mb-4">Jutro (08.05.2025)</h3>
+<!-- Wydarzenie 4 -->
+<div class="relative pl-20 pb-8">
+<div class="absolute left-0 top-0 w-16 text-sm text-gray-500">08:30</div>
+<div class="absolute left-8 top-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center z-10">
+<i class="ri-run-line text-white text-xs"></i>
+</div>
+<div class="bg-white border border-gray-200 rounded p-4 ml-4">
+<div class="flex justify-between items-start mb-2">
+<h4 class="text-base font-medium text-gray-800">Rozgrzewka drużyn przed kolejką 2</h4>
+<span class="text-xs font-medium px-2 py-1 bg-green-100 text-green-800 rounded-full">Trening</span>
+</div>
+<p class="text-sm text-gray-600 mb-3">Hala Sportowa "Centrum", boiska 1-2</p>
+<div class="flex items-center text-sm text-gray-500">
+<div class="w-5 h-5 flex items-center justify-center mr-1">
+<i class="ri-time-line"></i>
+</div>
+<span>1 godzina</span>
+</div>
+</div>
+</div>
+<!-- Wydarzenie 5 -->
+<div class="relative pl-20 pb-8">
+<div class="absolute left-0 top-0 w-16 text-sm text-gray-500">12:00</div>
+<div class="absolute left-8 top-2 w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center z-10">
+<i class="ri-restaurant-line text-white text-xs"></i>
+</div>
+<div class="bg-white border border-gray-200 rounded p-4 ml-4">
+<div class="flex justify-between items-start mb-2">
+<h4 class="text-base font-medium text-gray-800">Lunch dla uczestników Mistrzostw Juniorów</h4>
+<span class="text-xs font-medium px-2 py-1 bg-purple-100 text-purple-800 rounded-full">Inne</span>
+</div>
+<p class="text-sm text-gray-600 mb-3">Stołówka, Hala Sportowa "Centrum"</p>
+<div class="flex items-center text-sm text-gray-500">
+<div class="w-5 h-5 flex items-center justify-center mr-1">
+<i class="ri-time-line"></i>
+</div>
+<span>1.5 godziny</span>
+</div>
+</div>
+</div>
+<!-- Wydarzenie 6 -->
+<div class="relative pl-20">
+<div class="absolute left-0 top-0 w-16 text-sm text-gray-500">19:00</div>
+<div class="absolute left-8 top-2 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center z-10">
+<i class="ri-group-line text-white text-xs"></i>
+</div>
+<div class="bg-white border border-gray-200 rounded p-4 ml-4">
+<div class="flex justify-between items-start mb-2">
+<h4 class="text-base font-medium text-gray-800">Spotkanie organizacyjne - Orlik Cup</h4>
+<span class="text-xs font-medium px-2 py-1 bg-blue-100 text-blue-800 rounded-full">Spotkanie</span>
+</div>
+<p class="text-sm text-gray-600 mb-3">Sala konferencyjna "A", Hala Sportowa "Centrum"</p>
+<div class="flex items-center text-sm text-gray-500">
+<div class="w-5 h-5 flex items-center justify-center mr-1">
+<i class="ri-time-line"></i>
+</div>
+<span>2 godziny</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Panel Powiadomień (ukryty, będzie wyświetlany jako modal) -->
+<div id="powiadomienia-panel" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+<div class="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[80vh] overflow-hidden flex flex-col">
+<div class="p-4 border-b border-gray-200 flex justify-between items-center">
+<h3 class="text-lg font-medium text-gray-800">Powiadomienia</h3>
+<button id="close-notifications" class="text-gray-400 hover:text-gray-500">
+<i class="ri-close-line text-xl"></i>
+</button>
+</div>
+<div class="p-4 border-b border-gray-200">
+<div class="flex space-x-2">
+<button class="px-3 py-1 text-xs font-medium text-white bg-primary rounded-full">Wszystkie</button>
+<button class="px-3 py-1 text-xs font-medium text-gray-700 bg-gray-100 rounded-full hover:bg-gray-200">Zawody</button>
+<button class="px-3 py-1 text-xs font-medium text-gray-700 bg-gray-100 rounded-full hover:bg-gray-200">Mecze</button>
+<button class="px-3 py-1 text-xs font-medium text-gray-700 bg-gray-100 rounded-full hover:bg-gray-200">Wydarzenia</button>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-4">
+<!-- Powiadomienie 1 -->
+<div class="mb-4 p-3 bg-white border border-gray-200 rounded shadow-sm hover:shadow-md transition">
+<div class="flex items-start">
+<div class="w-8 h-8 flex items-center justify-center bg-primary/10 rounded-full text-primary mr-3">
+<i class="ri-notification-3-line"></i>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<h4 class="text-sm font-medium text-gray-800">Nowy mecz został dodany</h4>
+<span class="text-xs text-gray-500">10 min temu</span>
+</div>
+<p class="text-xs text-gray-600">Mecz Wisła Kraków vs Pogoń Szczecin został dodany do harmonogramu na dzisiaj o 11:30.</p>
+</div>
+</div>
+</div>
+<!-- Powiadomienie 2 -->
+<div class="mb-4 p-3 bg-white border border-gray-200 rounded shadow-sm hover:shadow-md transition">
+<div class="flex items-start">
+<div class="w-8 h-8 flex items-center justify-center bg-red-100 rounded-full text-red-600 mr-3">
+<i class="ri-error-warning-line"></i>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<h4 class="text-sm font-medium text-gray-800">Zmiana miejsca wydarzenia</h4>
+<span class="text-xs text-gray-500">30 min temu</span>
+</div>
+<p class="text-xs text-gray-600">Konferencja prasowa została przeniesiona z sali A do sali B. Godzina pozostaje bez zmian.</p>
+</div>
+</div>
+</div>
+<!-- Powiadomienie 3 -->
+<div class="mb-4 p-3 bg-white border border-gray-200 rounded shadow-sm hover:shadow-md transition">
+<div class="flex items-start">
+<div class="w-8 h-8 flex items-center justify-center bg-green-100 rounded-full text-green-600 mr-3">
+<i class="ri-check-line"></i>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<h4 class="text-sm font-medium text-gray-800">Zakończono mecz</h4>
+<span class="text-xs text-gray-500">1 godz. temu</span>
+</div>
+<p class="text-xs text-gray-600">Mecz Sokół Warszawa vs Orzeł Poznań zakończył się wynikiem 2:1.</p>
+</div>
+</div>
+</div>
+<!-- Powiadomienie 4 -->
+<div class="mb-4 p-3 bg-white border border-gray-200 rounded shadow-sm hover:shadow-md transition">
+<div class="flex items-start">
+<div class="w-8 h-8 flex items-center justify-center bg-blue-100 rounded-full text-blue-600 mr-3">
+<i class="ri-calendar-event-line"></i>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<h4 class="text-sm font-medium text-gray-800">Przypomnienie o wydarzeniu</h4>
+<span class="text-xs text-gray-500">2 godz. temu</span>
+</div>
+<p class="text-xs text-gray-600">Odprawa trenerów przed Mistrzostwami Juniorów rozpocznie się za 30 minut.</p>
+</div>
+</div>
+</div>
+<!-- Powiadomienie 5 -->
+<div class="mb-4 p-3 bg-white border border-gray-200 rounded shadow-sm hover:shadow-md transition">
+<div class="flex items-start">
+<div class="w-8 h-8 flex items-center justify-center bg-yellow-100 rounded-full text-yellow-600 mr-3">
+<i class="ri-timer-line"></i>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<h4 class="text-sm font-medium text-gray-800">Zmiana terminu kolejki</h4>
+<span class="text-xs text-gray-500">wczoraj</span>
+</div>
+<p class="text-xs text-gray-600">Kolejka 6 Mistrzostw Juniorów została przesunięta z 12.05 na 13.05.2025.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 border-t border-gray-200">
+<div class="flex justify-between items-center">
+<button class="text-sm text-primary hover:text-primary/80 font-medium">Oznacz wszystkie jako przeczytane</button>
+<button class="text-sm text-gray-600 hover:text-gray-800">Ustawienia powiadomień</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Panel Zgłoszeń (ukryty domyślnie) -->
+<div id="zgloszenia-panel" class="hidden bg-white rounded shadow-sm p-6">
+<div class="flex flex-wrap items-center justify-between mb-6">
+<h2 class="text-xl font-semibold text-gray-800">Zgłoszenia</h2>
+<div class="flex space-x-2 mt-2 sm:mt-0">
+<div class="relative">
+<input type="text" placeholder="Szukaj zgłoszeń..." class="pl-10 pr-4 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+<div class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 flex items-center justify-center">
+<i class="ri-search-line text-gray-400"></i>
+</div>
+</div>
+<div class="relative">
+<button class="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 !rounded-button hover:bg-gray-50 whitespace-nowrap">
+<i class="ri-filter-3-line mr-2"></i>
+Filtruj
+</button>
+</div>
+</div>
+</div>
+<!-- Filtry statusów -->
+<div class="mb-6">
+<div class="flex flex-wrap gap-2">
+<button class="px-3 py-1 text-xs font-medium text-white bg-primary rounded-full">Wszystkie (24)</button>
+<button class="px-3 py-1 text-xs font-medium text-gray-700 bg-gray-100 rounded-full hover:bg-gray-200">Nowe (8)</button>
+<button class="px-3 py-1 text-xs font-medium text-gray-700 bg-gray-100 rounded-full hover:bg-gray-200">W trakcie (10)</button>
+<button class="px-3 py-1 text-xs font-medium text-gray-700 bg-gray-100 rounded-full hover:bg-gray-200">Zatwierdzone (4)</button>
+<button class="px-3 py-1 text-xs font-medium text-gray-700 bg-gray-100 rounded-full hover:bg-gray-200">Odrzucone (2)</button>
+</div>
+</div>
+<!-- Lista zgłoszeń -->
+<div class="overflow-x-auto">
+<table class="min-w-full divide-y divide-gray-200">
+<thead class="bg-gray-50">
+<tr>
+<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Zawody</th>
+<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Uczestnik</th>
+<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data zgłoszenia</th>
+<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+<th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Akcje</th>
+</tr>
+</thead>
+<tbody class="bg-white divide-y divide-gray-200">
+<!-- Zgłoszenie 1 -->
+<tr>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">#2025-124</td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Mistrzostwa Juniorów</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="flex items-center">
+<div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+<i class="ri-user-line text-gray-500"></i>
+</div>
+<div class="ml-3">
+<p class="text-sm font-medium text-gray-900">Michał Kowalczyk</p>
+<p class="text-xs text-gray-500">michal.kowalczyk@email.com</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">07.05.2025, 08:15</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<span class="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">Nowe</span>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+<button class="text-primary hover:text-primary/80 mr-2">Szczegóły</button>
+<button class="text-green-600 hover:text-green-700 mr-2">Zatwierdź</button>
+<button class="text-red-600 hover:text-red-700">Odrzuć</button>
+</td>
+</tr>
+<!-- Zgłoszenie 2 -->
+<tr>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">#2025-123</td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Turniej Siatkówki Plażowej</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="flex items-center">
+<div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+<i class="ri-user-line text-gray-500"></i>
+</div>
+<div class="ml-3">
+<p class="text-sm font-medium text-gray-900">Anna Nowak</p>
+<p class="text-xs text-gray-500">anna.nowak@email.com</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">07.05.2025, 07:45</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">W trakcie</span>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+<button class="text-primary hover:text-primary/80 mr-2">Szczegóły</button>
+<button class="text-green-600 hover:text-green-700 mr-2">Zatwierdź</button>
+<button class="text-red-600 hover:text-red-700">Odrzuć</button>
+</td>
+</tr>
+<!-- Zgłoszenie 3 -->
+<tr>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">#2025-122</td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Orlik Cup</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="flex items-center">
+<div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+<i class="ri-user-line text-gray-500"></i>
+</div>
+<div class="ml-3">
+<p class="text-sm font-medium text-gray-900">Tomasz Wiśniewski</p>
+<p class="text-xs text-gray-500">tomasz.wisniewski@email.com</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">07.05.2025, 07:30</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Zatwierdzone</span>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+<button class="text-primary hover:text-primary/80">Szczegóły</button>
+</td>
+</tr>
+<!-- Zgłoszenie 4 -->
+<tr>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">#2025-121</td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Mistrzostwa Tenisa</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="flex items-center">
+<div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+<i class="ri-user-line text-gray-500"></i>
+</div>
+<div class="ml-3">
+<p class="text-sm font-medium text-gray-900">Katarzyna Zielińska</p>
+<p class="text-xs text-gray-500">katarzyna.zielinska@email.com</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">07.05.2025, 07:15</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<span class="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">Odrzucone</span>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+<button class="text-primary hover:text-primary/80">Szczegóły</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Paginacja -->
+<div class="flex justify-center mt-6">
+<nav class="inline-flex rounded-md shadow-sm">
+<button class="px-3 py-1 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+<i class="ri-arrow-left-s-line"></i>
+</button>
+<button class="px-3 py-1 border-t border-b border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">1</button>
+<button class="px-3 py-1 border-t border-b border-gray-300 bg-primary text-sm font-medium text-white">2</button>
+<button class="px-3 py-1 border-t border-b border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">3</button>
+<button class="px-3 py-1 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+<i class="ri-arrow-right-s-line"></i>
+</button>
+</nav>
+</div>
+</div>
+</main>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+// Obsługa zakładek
+const tabs = document.querySelectorAll('nav button');
+const panels = [
+document.getElementById('zawody-panel'),
+document.getElementById('kolejki-panel'),
+document.getElementById('mecze-panel'),
+document.getElementById('wydarzenia-panel'),
+document.getElementById('zgloszenia-panel')
+];
+tabs.forEach((tab, index) => {
+tab.addEventListener('click', () => {
+// Ukryj wszystkie panele
+panels.forEach(panel => {
+panel.classList.add('hidden');
+});
+// Usuń aktywną klasę ze wszystkich zakładek
+tabs.forEach(t => {
+t.classList.remove('tab-active');
+t.classList.add('text-gray-500');
+});
+// Pokaż wybrany panel i aktywuj zakładkę
+panels[index].classList.remove('hidden');
+tab.classList.add('tab-active');
+tab.classList.remove('text-gray-500');
+});
+});
+// Obsługa powiadomień
+const notificationButton = document.querySelector('.ri-notification-3-line').parentElement;
+const notificationsPanel = document.getElementById('powiadomienia-panel');
+const closeNotificationsButton = document.getElementById('close-notifications');
+notificationButton.addEventListener('click', () => {
+notificationsPanel.classList.remove('hidden');
+});
+closeNotificationsButton.addEventListener('click', () => {
+notificationsPanel.classList.add('hidden');
+});
+// Zamknij panel powiadomień po kliknięciu poza nim
+notificationsPanel.addEventListener('click', (e) => {
+if (e.target === notificationsPanel) {
+notificationsPanel.classList.add('hidden');
+}
+});
+});
+</script>
+</body>
+</html>

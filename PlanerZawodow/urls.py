@@ -74,3 +74,9 @@ urlpatterns = [
     # Rejestracja
     path('register/', views.RegisterView.as_view(), name='register'),
 ]
+
+# Widok dla strony głównej
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', include('zawodowplaner.urls')),  # Strona główna
+]
