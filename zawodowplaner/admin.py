@@ -77,10 +77,9 @@ class ZawodyAdmin(admin.ModelAdmin):
     list_display = ('nazwa', 'id_organizatora', 'data_rozpoczecia', 'data_zakonczenia', 'status', 'czy_otwarta')
     list_filter = ('status', 'czy_otwarta', 'data_rozpoczecia')
     search_fields = ('nazwa', 'id_organizatora__user__email', 'id_organizatora__imie', 'id_organizatora__nazwisko')
-    readonly_fields = ()
     fieldsets = (
         ('Informacje podstawowe', {
-            'fields': ('nazwa', 'organizator', 'opis')
+            'fields': ('nazwa', 'id_organizatora', 'opis')
         }),
         ('Terminy', {
             'fields': ('data_rozpoczecia', 'data_zakonczenia')
