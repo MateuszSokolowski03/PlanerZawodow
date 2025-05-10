@@ -1,39 +1,38 @@
-{% extends 'base.html' %}
-
-{% block content %}
-  <h2>Register</h2>
-
-  <!-- Pokaż błędy ogólne -->
-  {{ form.non_field_errors }}
-
-  <form method="post" id="registration-form">
-    {% csrf_token %}
-    
-    <div class="form-group">
-      <label for="typ_uzytkownika">Typ użytkownika:</label>
-      <select name="typ_uzytkownika" id="typ_uzytkownika" class="form-control" onchange="updateFormFields()">
-        <option value="fan">Fan</option>
-        <option value="kapitan">Kapitan</option>
-        <option value="organizator">Organizator</option>
-      </select>
-    </div>
-    
-    <div id="form-fields">
-      {% include 'registration/partials/fan_fields.html' %}
-    </div>
-    
-    <button type="submit" class="btn btn-primary">Register</button>
-  </form>
-
-  <script>
-    function updateFormFields() {
-      const typUzytkownika = document.getElementById('typ_uzytkownika').value;
-      fetch(`/register/partial/?typ_uzytkownika=${typUzytkownika}`)
-        .then(response => response.text())
-        .then(html => {
-          document.getElementById('form-fields').innerHTML = html;
-        })
-        .catch(error => console.error('Error:', error));
-    }
-  </script>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rejestracja</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#4f46e5',secondary:'#f97316'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+<div class="bg-white shadow-md rounded px-8 py-6 w-full max-w-md">
+<h2 class="text-2xl font-semibold text-gray-800 text-center mb-6">Rejestracja</h2>
+<form method="POST">
+  {% csrf_token %}
+  <div class="mb-4">
+    <label for="username" class="block text-sm font-medium text-gray-700">Nazwa użytkownika</label>
+    <input type="text" id="username" name="username" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required>
+  </div>
+  <div class="mb-4">
+    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+    <input type="email" id="email" name="email" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required>
+  </div>
+  <div class="mb-4">
+    <label for="password1" class="block text-sm font-medium text-gray-700">Hasło</label>
+    <input type="password" id="password1" name="password1" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required>
+  </div>
+  <div class="mb-4">
+    <label for="password2" class="block text-sm font-medium text-gray-700">Potwierdź hasło</label>
+    <input type="password" id="password2" name="password2" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required>
+  </div>
+  <button type="submit" class="w-full bg-primary text-white py-2 px-4 rounded hover:bg-primary/90">Zarejestruj się</button>
+</form>
+<div class="mt-4 text-center">
+  <p class="text-sm text-gray-600">Masz już konto? <a href="{% url 'login' %}" class="text-primary hover:underline">Zaloguj się</a></p>
+</div>
+</div>
+</body>
+</html>

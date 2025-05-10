@@ -1,89 +1,42 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from .models import uzytkownik
-from django.contrib.auth.models import BaseUserManager
+from django.contrib.auth.forms import UserCreationForm
 
-class UzytkownikCreationForm(UserCreationForm):
-    username = forms.CharField(max_length=150, required=True, label="Nazwa użytkownika")
+from zawodowplaner.models import Organizator, Zawody, Kolejka, Wydarzenie, Uzytkownik
 
+
+class OrganizatorForm(forms.ModelForm):
     class Meta:
-        model = uzytkownik
-        fields = ('username', 'email', 'first_name', 'last_name', 'telefon', 'typ_uzytkownika')
+        model = Organizator
+        fields = ['nazwa', 'email', 'telefon']  # Dopasuj pola do modelu Organizator
 
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Usuwamy pomoc tekstową z pól hasła
-        self.fields['password1'].help_text = None
-        self.fields['password2'].help_text = None
-
-    # Dostosowanie pola email
-    def clean_email(self):
-        email = self.cleaned_data.get('email')
-        if uzytkownik.objects.filter(email=email).exists():
-            raise forms.ValidationError("Ten email jest już używany.")
-        return email
-
-class UzytkownikManager(BaseUserManager):
-    def create_user(self, email, username, password=None, **extra_fields):
-        if not email:
-            raise ValueError('Email musi być podany')
-        email = self.normalize_email(email)
-        user = self.model(email=email, username=username, **extra_fields)
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
-
-#    def create_superuser(self, email, username, password=None, **extra_fields):
-#        extra_fields.setdefault('is_staff', True)
-#        extra_fields.setdefault('is_superuser', True)
-
-#        return self.create_user(email, username, password, **extra_fields)
-    
-
-    def create_superuser(self, email, password=None, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-
-        # Usuwamy konieczność podania 'username', ponieważ używamy 'email'
-        if 'username' in extra_fields:
-            del extra_fields['username']
-
-        return self.create_user(email, password, **extra_fields)
-    
-
-class UzytkownikChangeForm(UserChangeForm):
+class ZawodyForm(forms.ModelForm):
     class Meta:
-        model = uzytkownik
-        fields = ('email', 'first_name', 'last_name', 'telefon', 'typ_uzytkownika', 'is_active', 'is_staff', 'is_superuser')
-        
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['password'].help_text = "Hasła nie przechowujemy w postaci tekstowej, więc nie można zobaczyć hasła tego użytkownika."
+        model = Zawody
+        fields = ['nazwa', 'data_rozpoczecia', 'data_zakonczenia', 'status', 'opis']  # Dopasuj pola do modelu Zawody
 
-class RegistrationForm(UzytkownikCreationForm):
-    class Meta(UzytkownikCreationForm.Meta):
-        fields = UzytkownikCreationForm.Meta.fields
-
-class FanRegistrationForm(UserCreationForm):
-    username = forms.CharField(max_length=150, required=True, label="Nazwa użytkownika")
-
+class KolejkaForm(forms.ModelForm):
     class Meta:
-        model = uzytkownik
-        fields = ('username', 'email', 'password1', 'password2')
+        model = Kolejka
+        fields = ['nazwa', 'data', 'miejsce', 'zawody']  # Dopasuj pola do modelu Kolejka
 
-class KapitanRegistrationForm(UserCreationForm):
-    username = forms.CharField(max_length=150, required=True, label="Nazwa użytkownika")
-
+class WydarzenieForm(forms.ModelForm):
     class Meta:
-        model = uzytkownik
-        fields = ('username', 'email', 'first_name', 'last_name', 'telefon', 'password1', 'password2')
+        model = Wydarzenie
+        fields = ['nazwa', 'data', 'miejsce', 'typ', 'opis']  # Dopasuj pola do modelu Wydarzenie
 
-class OrganizatorRegistrationForm(UserCreationForm):
-    username = forms.CharField(max_length=150, required=True, label="Nazwa użytkownika")
-    PESEL = forms.CharField(max_length=11, required=True, label="PESEL")
 
-    class Meta:
-        model = uzytkownik
-        fields = ('username', 'email', 'first_name', 'last_name', 'telefon', 'PESEL', 'password1', 'password2')
+class RegisterForm(UserCreationForm):
+    email = forms.EmailField(required=True, label="Adres e-mail")
 
+
+class Meta:
+    model = Uzytkownik
+    fields = ['username', 'email', 'password1', 'password2']
+
+
+def save(self, commit=True):
+    user = super().save(commit=False)
+    user.email = self.cleaned_data['email']
+    if commit:
+        user.save()
+    return user

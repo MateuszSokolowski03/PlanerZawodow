@@ -1,285 +1,108 @@
-from django.shortcuts import render
-from django.contrib.auth.views import LoginView
-from django.http import HttpResponse
-from django.urls import reverse_lazy
-from django.views.generic import (
-    ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView,
-)
-from .forms import RegistrationForm, FanRegistrationForm, KapitanRegistrationForm, OrganizatorRegistrationForm
+from django.contrib.auth.views import LogoutView
+from django.shortcuts import render, get_object_or_404
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render, redirect
-from zawodowplaner.forms import RegistrationForm
-from .models import (
-    zawody, kolejka, druzyna, zgloszenie,
-    zawodnik, mecz, wydarzenie, powiadomienie,
-    organizator, kapitan, uzytkownik
-)
-from django.contrib.auth.forms import UserCreationForm
-from django.views.generic.edit import CreateView
-from .models import mecz #pobieranie danych o meczach
+from django.urls import reverse_lazy
 
-# Widok dla strony poczatkowej
-class HomePageView(TemplateView):
+from .models import Organizator, Uzytkownik, Mecz, Wydarzenie, Zawody, Kolejka, Druzyna, Powiadomienie
+from .forms import OrganizatorForm, ZawodyForm, KolejkaForm, WydarzenieForm, RegisterForm
+
+# Strona główna
+class HomePageView(LoginRequiredMixin, ListView):
     template_name = 'home.html'
-    
-class CustomLoginView(LoginView):
-    template_name = 'registration/login.html'
+    context_object_name = 'homepage'
+    queryset = Zawody.objects.all()
 
-    def get_success_url(self):
-        # Po zalogowaniu przekierowujemy na odpowiednią stronę
-        user = self.request.user
-        if user.typ_uzytkownika == 'organizator':
-            return reverse_lazy('organizator-start') # Strona startowa dla organizatora
-        elif user.typ_uzytkownika == 'kapitan':
-            return reverse_lazy('kapitan-start')  # Strona dla kapitana
-        elif user.typ_uzytkownika == 'fan':
-            return reverse_lazy('fan-start')  # Strona dla fana
-        return reverse_lazy('home')  # Strona domyślna
+class OrganizatorMainPageView(LoginRequiredMixin, ListView):
+    template_name = 'zawodowplaner/zawody.html'
+    context_object_name = 'mainpage'
+    queryset = Zawody.objects.all()
 
-# Widok rejestracji użytkownika
-def register(request):
-    if request.method == 'POST':
-        typ_uzytkownika = request.POST.get('typ_uzytkownika', 'fan')
+# Organizatorzy
+class OrganizatorListView(LoginRequiredMixin, ListView):
+    model = Organizator
+    template_name = 'zawodowplaner/organizatorzy.html'
 
-        if typ_uzytkownika == 'fan':
-            form = FanRegistrationForm(request.POST)
-        elif typ_uzytkownika == 'kapitan':
-            form = KapitanRegistrationForm(request.POST)
-        elif typ_uzytkownika == 'organizator':
-            form = OrganizatorRegistrationForm(request.POST)
-        else:
-            form = FanRegistrationForm(request.POST)
-
-        if form.is_valid():
-            user = form.save(commit=False)
-            user.typ_uzytkownika = typ_uzytkownika
-            user.save()
-
-            if typ_uzytkownika == 'kapitan':
-                kapitan.objects.create(user=user)
-            elif typ_uzytkownika == 'organizator':
-                organizator.objects.create(
-                    user=user,
-                    imie=user.first_name,
-                    nazwisko=user.last_name,
-                    PESEL=form.cleaned_data['PESEL']
-                )
-
-            return redirect('login')
-    else:
-        form = FanRegistrationForm()
-
-    return render(request, 'registration/register.html', {'form': form})
-def register_partial(request):
-    typ = request.GET.get('typ_uzytkownika', 'fan')
-
-    if typ == 'fan':
-        form = FanRegistrationForm()
-        template = 'registration/partials/fan_fields.html'
-    elif typ == 'kapitan':
-        form = KapitanRegistrationForm()
-        template = 'registration/partials/kapitan_fields.html'
-    elif typ == 'organizator':
-        form = OrganizatorRegistrationForm()
-        template = 'registration/partials/organizator_fields.html'
-    else:
-        form = FanRegistrationForm()
-        template = 'registration/partials/fan_fields.html'
-
-    return render(request, template, {'form': form})
-class RegisterView(CreateView):
-    template_name = 'registration/register.html'
-    form_class = RegistrationForm  # Use the custom RegistrationForm
-    success_url = reverse_lazy('login')
-
-# Widoki dla Organizatorów
-class OrganizatorListView(ListView):
-    model = organizator
-    template_name = 'organizator/list.html'
-    context_object_name = 'organizatorzy'
-
-class OrganizatorCreateView(CreateView):
-    model = organizator
-    template_name = 'organizator/form.html'
-    fields = ['id_uzytkownika', 'imie', 'nazwisko', 'telefon', 'PESEL']
+class OrganizatorCreateView(LoginRequiredMixin, CreateView):
+    model = Organizator
+    form_class = OrganizatorForm
+    template_name = 'zawodowplaner/organizator_form.html'
     success_url = reverse_lazy('organizator-list')
 
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        form.fields['id_uzytkownika'].queryset = uzytkownik.objects.filter(typ_uzytkownika='organizator')
-        return form
+# Użytkownicy
+class UzytkownikListView(LoginRequiredMixin, ListView):
+    model = Uzytkownik
+    template_name = 'zawodowplaner/uzytkownicy.html'
 
-# Widoki dla Kapitanów
-class KapitanListView(ListView):
-    model = kapitan
-    template_name = 'kapitan/list.html'
-    context_object_name = 'kapitanowie'
+# Mecze
+class MeczListView(LoginRequiredMixin, ListView):
+    model = Mecz
+    template_name = 'zawodowplaner/mecze.html'
 
-class KapitanUpdateView(UpdateView):
-    model = kapitan
-    template_name = 'kapitan/form.html'
-    fields = ['potwierdzony']
-    success_url = reverse_lazy('kapitan-list')
+class MeczUpdateView(LoginRequiredMixin, UpdateView):
+    model = Mecz
+    fields = ['druzyna_gospodarz', 'druzyna_gosc', 'wynik_gospodarz', 'wynik_gosc', 'data_meczu', 'miejsce', 'status']
+    template_name = 'zawodowplaner/mecz_form.html'
+    success_url = reverse_lazy('mecz-list')
 
-# Widoki dla Użytkowników
-class UzytkownikListView(ListView):
-    model = uzytkownik
-    template_name = 'uzytkownik/list.html'
-    context_object_name = 'uzytkownicy'
-    ordering = ['-data_rejestracji']
+# Wydarzenia
+class WydarzenieCreateView(LoginRequiredMixin, CreateView):
+    model = Wydarzenie
+    form_class = WydarzenieForm
+    template_name = 'zawodowplaner/wydarzenie_form.html'
+    success_url = reverse_lazy('user-main')
 
+# Zawodnicy
+# class ZawodnikUpdateView(LoginRequiredMixin, UpdateView):
+#     model = Zawodnik
+#     fields = ['imie', 'nazwisko', 'druzyna']
+#     template_name = 'zawodowplaner/zawodnik_form.html'
+#     success_url = reverse_lazy('user-main')
 
-# Widoki dla Zawodów
-class ZawodyListView(ListView):
-    model = zawody
-    template_name = 'zawody/list.html'
-    context_object_name = 'zawody'
-    paginate_by = 10
+# Zawody
+class ZawodyListView(LoginRequiredMixin, ListView):
+    model = Zawody
+    template_name = 'zawodowplaner/zawody.html'
 
-
-class ZawodyDetailView(DetailView):
-    model = zawody
-    template_name = 'zawody/detail.html'
-
+class ZawodyDetailView(LoginRequiredMixin, DetailView):
+    model = Zawody
+    template_name = 'zawodowplaner/zawody_detail.html'
 
 class ZawodyCreateView(LoginRequiredMixin, CreateView):
-    model = zawody
-    template_name = 'zawody/form.html'
-    fields = ['nazwa', 'id_organizatora', 'data_rozpoczecia',
-              'data_zakonczenia', 'opis', 'maks_zespolow', 'regulaminy']
+    model = Zawody
+    form_class = ZawodyForm
+    template_name = 'zawodowplaner/zawody_form.html'
     success_url = reverse_lazy('zawody-list')
-
 
 class ZawodyUpdateView(LoginRequiredMixin, UpdateView):
-    model = zawody
-    template_name = 'zawody/form.html'
-    fields = ['nazwa', 'data_rozpoczecia', 'data_zakonczenia',
-              'opis', 'status', 'maks_zespolow', 'regulaminy']
+    model = Zawody
+    form_class = ZawodyForm
+    template_name = 'zawodowplaner/zawody_form.html'
     success_url = reverse_lazy('zawody-list')
 
-
-class ZawodyDeleteView(LoginRequiredMixin, DeleteView):
-    model = zawody
-    template_name = 'zawody/confirm_delete.html'
-    success_url = reverse_lazy('zawody-list')
-
-
-# Widoki dla Kolejek
+# Kolejki
 class KolejkaCreateView(LoginRequiredMixin, CreateView):
-    model = kolejka
-    template_name = 'kolejka/form.html'
-    fields = ['id_zawodu', 'numer', 'nazwa', 'data_rozpoczecia', 'data_zakonczenia']
-    success_url = reverse_lazy('zawody-list')
+    model = Kolejka
+    form_class = KolejkaForm
+    template_name = 'zawodowplaner/kolejka_form.html'
+    success_url = reverse_lazy('user-main')
 
+# Drużyny
+class DruzynaListView(LoginRequiredMixin, ListView):
+    model = Druzyna
+    template_name = 'zawodowplaner/druzyny.html'
 
-class KolejkaUpdateView(LoginRequiredMixin, UpdateView):
-    model = kolejka
-    template_name = 'kolejka/form.html'
-    fields = ['numer', 'nazwa', 'data_rozpoczecia', 'data_zakonczenia', 'czy_zakonczona']
-    success_url = reverse_lazy('zawody-list')
-
-
-# Widoki dla Drużyn
-class DruzynaListView(ListView):
-    model = druzyna
-    template_name = 'druzyna/list.html'
-    context_object_name = 'druzyny'
-
-
-class DruzynaCreateView(LoginRequiredMixin, CreateView):
-    model = druzyna
-    template_name = 'druzyna/form.html'
-    fields = ['id_kapitana', 'nazwa', 'herb_url']
-    success_url = reverse_lazy('druzyna-list')
-
-
-# Widoki dla Zgłoszeń
-class ZgloszenieCreateView(LoginRequiredMixin, CreateView):
-    model = zgloszenie
-    template_name = 'zgloszenie/form.html'
-    fields = ['id_zawodu', 'id_druzyny']
-    success_url = reverse_lazy('zgloszenie-list')
-
-    def form_valid(self, form):
-        form.instance.status = 'oczekujaca'
-        return super().form_valid(form)
-
-
-# Widoki dla Zawodników
-class ZawodnikCreateView(LoginRequiredMixin, CreateView):
-    model = zawodnik
-    template_name = 'zawodnik/form.html'
-    fields = ['id_druzyny', 'imie', 'nazwisko', 'data_urodzenia',
-              'pozycja', 'numer_koszulki', 'zdjecie_url']
-    success_url = reverse_lazy('druzyna-list')
-
-
-# Widoki dla Meczy
-class MeczDetailView(DetailView):
-    model = mecz
-    template_name = 'mecz/detail.html'
-
-
-class MeczCreateView(LoginRequiredMixin, CreateView):
-    model = mecz
-    template_name = 'mecz/form.html'
-    fields = ['id_kolejki', 'id_zawodu', 'data_meczu', 'miejsce',
-              'druzyna_gospodarz', 'druzyna_gosc', 'sedzia_glowny']
-    success_url = reverse_lazy('mecz-list')
-
-
-class MeczListView(ListView):
-    model = mecz
-    template_name = 'mecz/list.html'
-
-    def get_queryset(self):
-        return mecz.objects.select_related('id_zawodu', 'id_kolejki')
-
-
-class MeczUpdateView(UpdateView):
-    model = mecz
-    template_name = 'mecz/form.html'
-    fields = ['wynik_gospodarz', 'wynik_gosc', 'status', 'sedzia_glowny']
-    success_url = reverse_lazy('mecz-list')
-
-
+# Powiadomienia
 class PowiadomienieListView(LoginRequiredMixin, ListView):
-    model = powiadomienie
-    template_name = 'powiadomienie/list.html'
+    model = Powiadomienie
+    template_name = 'zawodowplaner/powiadomienia.html'
 
-    def get_queryset(self):
-        # Pobierz instancję modelu `uzytkownik` powiązaną z aktualnym użytkownikiem
-        try:
-            uzytkownik_instance = uzytkownik.objects.get(email=self.request.user.email)
-        except uzytkownik.DoesNotExist:
-            # Jeśli użytkownik nie istnieje w modelu `uzytkownik`, zwróć pusty queryset
-            return self.model.objects.none()
+# Rejestracja
+class RegisterView(CreateView):
+    form_class = RegisterForm
+    template_name = 'registration/register.html'
+    success_url = reverse_lazy('login')
 
-        # Filtruj powiadomienia dla tego użytkownika
-        return self.model.objects.filter(id_uzytkownika=uzytkownik_instance)
-
-
-class PowiadomienieUpdateView(LoginRequiredMixin, UpdateView):
-    model = powiadomienie
-    template_name = 'powiadomienie/form.html'
-    fields = ['przeczytane']
-    success_url = reverse_lazy('powiadomienie-list')
-
-# Widoki dla Wydarzeń
-class WydarzenieCreateView(CreateView):
-    model = wydarzenie
-    template_name = 'wydarzenie/form.html'
-    fields = ['id_meczu', 'minuta', 'typ', 'id_zawodnika', 'id_druzyny', 'komentarz']
-    success_url = reverse_lazy('mecz-list')
-
-# Widoki dla Zawodników
-class ZawodnikUpdateView(UpdateView):
-    model = zawodnik
-    template_name = 'zawodnik/form.html'
-    fields = ['pozycja', 'numer_koszulki', 'zdjecie_url']
-    success_url = reverse_lazy('druzyna-list')
-
-#widok strony startowej
-def home_view(request):
-    mecze = mecz.objects.all()  # Pobierz wszystkie mecze z bazy danych
-    return render(request, 'zawodowplaner/zawody.html', {'mecze': mecze})
+# Wylogowanie
+class CustomLogoutView(LogoutView):
+    next_page = reverse_lazy('login')

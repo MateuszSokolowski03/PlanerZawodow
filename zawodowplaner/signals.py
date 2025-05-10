@@ -1,10 +1,10 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from zawodowplaner.models.liga_models import kolejka
-from zawodowplaner.models.mecz_models import mecz
-from zawodowplaner.models.druzyna_models import zgloszenie
+from zawodowplaner.models.kolejka_models import Kolejka
+from zawodowplaner.models.mecz_models import Mecz
+from zawodowplaner.models.zgloszenie_models import Zgloszenie
 
-@receiver(post_save, sender=mecz)
+@receiver(post_save, sender=Mecz)
 def zakonczenie_kolejki_po_meczu(sender, instance, created, **kwargs):
     """
     Automatycznie kończy kolejkę, jeśli wszystkie mecze w niej są zakończone.

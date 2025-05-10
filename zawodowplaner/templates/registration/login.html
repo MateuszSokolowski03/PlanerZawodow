@@ -1,11 +1,30 @@
-{% extends 'base.html' %}
-
-{% block content %}
-  <h2>Login</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Login</button>
-  </form>
-  <p>Don't have an account? <a href="{% url 'register' %}">Register here</a>.</p>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Logowanie</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#4f46e5',secondary:'#f97316'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+<div class="bg-white shadow-md rounded px-8 py-6 w-full max-w-md">
+<h2 class="text-2xl font-semibold text-gray-800 text-center mb-6">Logowanie</h2>
+<form method="POST">
+  {% csrf_token %}
+  <div class="mb-4">
+    <label for="username" class="block text-sm font-medium text-gray-700">Nazwa użytkownika</label>
+    <input type="text" id="username" name="username" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required>
+  </div>
+  <div class="mb-4">
+    <label for="password" class="block text-sm font-medium text-gray-700">Hasło</label>
+    <input type="password" id="password" name="password" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required>
+  </div>
+  <button type="submit" class="w-full bg-primary text-white py-2 px-4 rounded hover:bg-primary/90">Zaloguj się</button>
+</form>
+<div class="mt-4 text-center">
+  <p class="text-sm text-gray-600">Nie masz konta? <a href="{% url 'register' %}" class="text-primary hover:underline">Zarejestruj się</a></p>
+</div>
+</div>
+</body>
+</html>

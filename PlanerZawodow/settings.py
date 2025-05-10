@@ -129,7 +129,7 @@ STATIC_URL = 'static/'
 ADMIN_URL = 'admin/'
 
 # Redirect users after login
-LOGIN_REDIRECT_URL = 'organizator-start' 
+LOGIN_REDIRECT_URL = 'organizator-main'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

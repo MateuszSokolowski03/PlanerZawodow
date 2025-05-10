@@ -1,130 +1,70 @@
-<!-- templates/home.html -->
-{% extends "base.html" %}
-
-{% block title %}Strona Główna{% endblock %}
-
-{% block content %}
-<div class="container">
-    <h1 class="my-5">Panel zarządzania systemem zawodów</h1>
-
-    <!-- Pierwszy wiersz - główne moduły -->
-    <div class="row">
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 dashboard-card">
-                <div class="card-body">
-                    <h5 class="card-title">🏆 Zawody</h5>
-                    <p class="card-text">Zarządzaj turniejami i harmonogramem</p>
-                    <div class="d-grid gap-2">
-                        <a href="{% url 'zawody-list' %}" class="btn btn-primary">Przeglądaj</a>
-                        <a href="{% url 'zawody-create' %}" class="btn btn-outline-primary">Dodaj zawody</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 dashboard-card">
-                <div class="card-body">
-                    <h5 class="card-title">👥 Drużyny</h5>
-                    <p class="card-text">Zarządzaj zespołami i zawodnikami</p>
-                    <a href="{% url 'druzyna-list' %}" class="btn btn-primary">Przejdź</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 dashboard-card">
-                <div class="card-body">
-                    <h5 class="card-title">🔔 Powiadomienia</h5>
-                    <p class="card-text">Komunikaty systemowe i alerty</p>
-                    <a href="{% url 'powiadomienie-list' %}" class="btn btn-primary">Sprawdź</a>
-                </div>
-            </div>
-        </div>
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planer Zawodów - Strona Główna</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#4f46e5',secondary:'#f97316'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+<style>
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f9fafb;
+}
+</style>
+</head>
+<body>
+<div class="min-h-screen flex flex-col">
+  <!-- Nagłówek -->
+  <header class="bg-white shadow-sm">
+    <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+      <h1 class="text-2xl font-['Pacifico'] text-primary">Planer Zawodów</h1>
+      <div>
+        <a href="{% url 'login' %}" class="px-4 py-2 text-sm font-medium text-white bg-primary rounded hover:bg-primary/90">
+          Zaloguj się jako organizator
+        </a>
+      </div>
     </div>
+  </header>
 
-    <!-- Drugi wiersz - nowe moduły -->
-    <div class="row mt-4">
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 dashboard-card">
-                <div class="card-body">
-                    <h5 class="card-title">📋 Organizatorzy</h5>
-                    <p class="card-text">Zarządzaj organizatorami zawodów</p>
-                    <div class="d-grid gap-2">
-                        <a href="{% url 'organizator-list' %}" class="btn btn-info">Lista</a>
-                        <a href="{% url 'organizator-create' %}" class="btn btn-outline-info">Dodaj nowego</a>
-                    </div>
-                </div>
-            </div>
+  <!-- Główna zawartość -->
+  <main class="flex-grow py-6 px-4">
+    <div class="container mx-auto text-center">
+      <h2 class="text-3xl font-semibold text-gray-800 mb-4">Witamy w Planerze Zawodów</h2>
+      <p class="text-gray-600 text-lg mb-6">
+        Odkryj nadchodzące wydarzenia sportowe, śledź wyniki i bądź na bieżąco z najważniejszymi zawodami.
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Przykładowe zawody -->
+        <div class="bg-white border border-gray-200 rounded p-4 hover:shadow-md transition">
+          <h3 class="text-lg font-medium text-gray-800">Turniej Piłki Nożnej</h3>
+          <p class="text-sm text-gray-600 mb-3">20.05.2025 - 22.05.2025</p>
+          <button class="text-primary hover:text-primary/80 text-sm font-medium">Szczegóły</button>
         </div>
-
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 dashboard-card">
-                <div class="card-body">
-                    <h5 class="card-title">🎖️ Kapitanowie</h5>
-                    <p class="card-text">Weryfikacja i zarządzanie kapitanami</p>
-                    <a href="{% url 'kapitan-list' %}" class="btn btn-info">Przeglądaj</a>
-                </div>
-            </div>
+        <div class="bg-white border border-gray-200 rounded p-4 hover:shadow-md transition">
+          <h3 class="text-lg font-medium text-gray-800">Zawody Pływackie</h3>
+          <p class="text-sm text-gray-600 mb-3">01.06.2025 - 03.06.2025</p>
+          <button class="text-primary hover:text-primary/80 text-sm font-medium">Szczegóły</button>
         </div>
-
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 dashboard-card">
-                <div class="card-body">
-                    <h5 class="card-title">👤 Użytkownicy</h5>
-                    <p class="card-text">Przeglądaj wszystkich użytkowników systemu</p>
-                    <a href="{% url 'uzytkownik-list' %}" class="btn btn-info">Lista</a>
-                </div>
-            </div>
+        <div class="bg-white border border-gray-200 rounded p-4 hover:shadow-md transition">
+          <h3 class="text-lg font-medium text-gray-800">Mistrzostwa Lekkoatletyczne</h3>
+          <p class="text-sm text-gray-600 mb-3">15.06.2025 - 18.06.2025</p>
+          <button class="text-primary hover:text-primary/80 text-sm font-medium">Szczegóły</button>
         </div>
+      </div>
     </div>
+  </main>
 
-    <!-- Trzeci wiersz - mecze i wydarzenia -->
-    <div class="row mt-4">
-        <div class="col-md-6 mb-4">
-            <div class="card h-100 dashboard-card">
-                <div class="card-body">
-                    <h5 class="card-title">⚽ Mecze</h5>
-                    <p class="card-text">Harmonogram i wyniki spotkań</p>
-                    <div class="d-grid gap-2">
-                        <a href="{% url 'mecz-list' %}" class="btn btn-warning">Kalendarz meczów</a>
-                        <a href="{% url 'mecz-update' 1 %}" class="btn btn-outline-warning">Edytuj wyniki</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6 mb-4">
-            <div class="card h-100 dashboard-card">
-                <div class="card-body">
-                    <h5 class="card-title">📅 Wydarzenia</h5>
-                    <p class="card-text">Rejestruj zdarzenia w trakcie meczów</p>
-                    <a href="{% url 'wydarzenie-create' %}" class="btn btn-warning">Dodaj wydarzenie</a>
-                </div>
-            </div>
-        </div>
+  <!-- Stopka -->
+  <footer class="bg-gray-100 py-4">
+    <div class="container mx-auto text-center text-sm text-gray-600">
+      &copy; 2025 Planer Zawodów. Wszelkie prawa zastrzeżone.
     </div>
-
-    <!-- Sekcja administracyjna -->
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="card border-dark">
-                <div class="card-body">
-                    <h5 class="card-title">⚙️ Narzędzia administracyjne</h5>
-                    <div class="d-flex gap-2 flex-wrap">
-                        <a href="/admin" class="btn btn-outline-dark" target="_blank">
-                            Panel administracyjny
-                        </a>
-                        <a href="{% url 'kolejka-create' %}" class="btn btn-outline-secondary">
-                            Generuj kolejki
-                        </a>
-{#                        <a href="{% url 'zgloszenie-create' %}" class="btn btn-outline-secondary">#}
-{#                            Nowe zgłoszenie#}
-{#                        </a>#}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+  </footer>
 </div>
-{% endblock %}
+</body>
+</html>

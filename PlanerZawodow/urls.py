@@ -1,82 +1,18 @@
-"""
-URL configuration for PlanerZawodow project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/4.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
-from django.urls import path,include
-from zawodowplaner import views
-from zawodowplaner.views import HomePageView
+from django.urls import path, include
 from django.contrib.auth import views as auth_views
+from zawodowplaner import views
+from zawodowplaner.views import CustomLogoutView
 
 urlpatterns = [
+    # Panel administracyjny
     path('admin/', admin.site.urls),
-    path('', include('zawodowplaner.urls')), 
 
-    path('', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login-default'),
+    # Strona główna
+    path('', views.HomePageView.as_view(), name='user-main'),
+    path('organizator/', include('zawodowplaner.urls'), name='organizator-main'),  # Przekierowanie do aplikacji zawodowplaner
 
-    # Organizatorzy
-  # Strona główna organizatora
-    path('organizator/home/', views.HomePageView.as_view(), name='organizator-home'),
-
-    # Lista organizatorów
-    path('organizatorzy/', views.OrganizatorListView.as_view(), name='organizator-list'),
-
-    # Dodawanie organizatora
-    path('organizator/dodaj/', views.OrganizatorCreateView.as_view(), name='organizator-create'),
-
-    # Kapitanowie
-    path('kapitanowie/', views.KapitanListView.as_view(), name='kapitan-list'),
-    path('kapitan/<int:pk>/', views.KapitanUpdateView.as_view(), name='kapitan-update'),
-
-    # Użytkownicy
-    path('uzytkownicy/', views.UzytkownikListView.as_view(), name='uzytkownik-list'),
-
-    # Mecze
-    path('mecze/', views.MeczListView.as_view(), name='mecz-list'),
-    path('mecz/<int:pk>/', views.MeczUpdateView.as_view(), name='mecz-update'),
-
-    # Wydarzenia
-    path('wydarzenie/dodaj/', views.WydarzenieCreateView.as_view(), name='wydarzenie-create'),
-
-    # Zawodnicy
-    path('zawodnik/<int:pk>/', views.ZawodnikUpdateView.as_view(), name='zawodnik-update'),
-
-    # Zawody
-    path('zawody/', views.ZawodyListView.as_view(), name='zawody-list'),
-    path('zawody/<int:pk>/', views.ZawodyDetailView.as_view(), name='zawody-detail'),
-    path('zawody/dodaj/', views.ZawodyCreateView.as_view(), name='zawody-create'),
-    path('zawody/<int:pk>/update/', views.ZawodyUpdateView.as_view(), name='zawody-update'),
-
-    # Kolejka
-    path('kolejka/dodaj/', views.KolejkaCreateView.as_view(), name='kolejka-create'),
-
-    # Drużyny
-    path('druzyny/', views.DruzynaListView.as_view(), name='druzyna-list'),
-
-    # Powiadomienia
-    path('powiadomienia/', views.PowiadomienieListView.as_view(), name='powiadomienie-list'),
-
-    # Login
+    # Rejestracja i logowanie
     path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
-
-    # Rejestracja
-    path('register/', views.RegisterView.as_view(), name='register'),
-]
-
-# Widok dla strony głównej
-urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('zawodowplaner.urls')),  # Strona główna
+    path('logout/', CustomLogoutView.as_view(), name='logout'),
 ]

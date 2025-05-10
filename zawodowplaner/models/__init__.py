@@ -1,5 +1,9 @@
-from .user_models import uzytkownik, organizator, kapitan
-from .liga_models import zawody, kolejka
-from .druzyna_models import druzyna, zawodnik,zgloszenie
-from .mecz_models import mecz, wydarzenie
-from .powiadomienie_models import powiadomienie
+from .user_models import Uzytkownik
+from .powiadomienie_models import Powiadomienie
+from .mecz_models import Mecz
+from .liga_models import Zawody
+from .druzyna_models import Druzyna
+from .kolejka_models import Kolejka
+from .wydarzenie_models import Wydarzenie
+from .zgloszenie_models import Zgloszenie
+from .organizator_models import Organizator

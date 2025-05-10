@@ -178,10 +178,13 @@ background: #4f46e5;
 <span class="absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">3</span>
 </button>
 </div>
+<form method="POST" action="{% url 'logout' %}">
+{% csrf_token %}
 <button class="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 !rounded-button hover:bg-gray-50 whitespace-nowrap">
 <i class="ri-logout-box-line mr-2"></i>
 Wyloguj
 </button>
+</form>
 </div>
 </div>
 </header>

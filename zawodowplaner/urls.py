@@ -1,20 +1,40 @@
-from django.urls import path, include
+from django.urls import path
 from zawodowplaner import views
-from django.contrib.auth import views as auth_views
-from .views import register, OrganizatorListView, register_partial
-from .views import register_partial
-from .views import CustomLoginView
-from django.views.generic import TemplateView
-from . import views
-
 
 urlpatterns = [
-    path('register/', register, name='register'),
-    path('login/', CustomLoginView.as_view(), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
-    path('organizator/start/', TemplateView.as_view(template_name='organizator/start.html'), name='organizator-start'),
-    path('register/partial/', register_partial, name='register_partial'),
-    path('kapitan/start/', TemplateView.as_view(template_name='kapitan/start.html'), name='kapitan-start'),
-    path('fan/start/', TemplateView.as_view(template_name='fan/start.html'), name='fan-start'),
-    path('', views.home_view, name='home'),  # Strona główna
+    # Strona główna
+    path('', views.HomePageView.as_view(), name='user-main'),
+    path('organizator/', views.OrganizatorMainPageView.as_view(), name='organizator-main'),
+
+    # Organizatorzy
+    path('organizatorzy/', views.OrganizatorListView.as_view(), name='organizator-list'),
+    path('organizator/dodaj/', views.OrganizatorCreateView.as_view(), name='organizator-create'),
+
+    # Użytkownicy
+    path('uzytkownicy/', views.UzytkownikListView.as_view(), name='uzytkownik-list'),
+
+    # Mecze
+    path('mecze/', views.MeczListView.as_view(), name='mecz-list'),
+    path('mecz/<int:pk>/', views.MeczUpdateView.as_view(), name='mecz-update'),
+
+    # Wydarzenia
+    path('wydarzenie/dodaj/', views.WydarzenieCreateView.as_view(), name='wydarzenie-create'),
+
+    # Zawody
+    path('zawody/', views.ZawodyListView.as_view(), name='zawody-list'),
+    path('zawody/<int:pk>/', views.ZawodyDetailView.as_view(), name='zawody-detail'),
+    path('zawody/dodaj/', views.ZawodyCreateView.as_view(), name='zawody-create'),
+    path('zawody/<int:pk>/update/', views.ZawodyUpdateView.as_view(), name='zawody-update'),
+
+    # Kolejki
+    path('kolejka/dodaj/', views.KolejkaCreateView.as_view(), name='kolejka-create'),
+
+    # Drużyny
+    path('druzyny/', views.DruzynaListView.as_view(), name='druzyna-list'),
+
+    # Powiadomienia
+    path('powiadomienia/', views.PowiadomienieListView.as_view(), name='powiadomienie-list'),
+
+    # Rejestracja
+    path('register/', views.RegisterView.as_view(), name='register'),
 ]
